@@ -24,7 +24,7 @@ export class AuthGuard implements CanActivate {
 
     canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
         console.log(next['_routerState']['url']);
-        // return true;
+         return true;
         const requestURL = next['_routerState']['url'];
         localStorage.setItem('requestURL', requestURL);
         this.user = localStorage.getItem('user') === null ? null : JSON.parse(localStorage.getItem('user')) as User;

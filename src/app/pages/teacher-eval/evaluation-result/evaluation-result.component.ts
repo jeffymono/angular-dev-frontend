@@ -50,7 +50,7 @@ export class EvaluationResultComponent implements OnInit {
 
   getEvaluations(): void {
     this._spinnerService.show();
-    this._teacherEvalService.post('types_questions/teacher_evaluations',{}).subscribe(
+    this._teacherEvalService.get('evaluations/teacher_evaluations').subscribe(
       response => {
         this._spinnerService.hide();
         this.evaluations = response['data']

@@ -17,8 +17,8 @@ export const environment = {
     API_URL_TEACHER_EVAL: URL + 'api/teacher_eval/',
     API_URL_COMMUNITY: URL + 'api/community/',
 
-    CLIENT_ID: '1',
-    CLIENT_SECRET: '32J6VCpAppxAfTWrzNBZxvN8AW2UEj7xtUU1PrRx',
+    CLIENT_ID: '2',
+    CLIENT_SECRET: 'GDzbRSqS5Xjt2iFyfOwbtSkVBwLmXHyYkEMccLGv',
     GRANT_TYPE: 'password',
 
     APP_ACRONYM: 'IGNUG',

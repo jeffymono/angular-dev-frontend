@@ -15,7 +15,7 @@
                         <li for="float-input-question" class="p-xl-12 p-sm-12" style="margin: .5em"
                             *ngFor="let question of answerQuestionsArray.controls; index as i">
                             <label>{{questions[i].name}}</label>
-                            <small style="display:block; color: #005cce;">{{questions[i].description}}</small>
+                            <small style="display:block; font-style: italic;">{{questions[i].description}}</small>
                             <div
                                 *ngIf="answerQuestionsArray.controls[i].errors && answerQuestionsArray.controls[i].touched">
                                 <p-message severity="warn" text="{{'QUESTION REQUIRED'|translate}}"
@@ -26,9 +26,9 @@
                             <div class="p-xl-12 p-sm-12" style="margin: .5em"
                                 *ngFor="let answer of questions[i].answers">
                                 <span class="ui-float-label">
-                                    <input type="radio" for="float-input-answer" value="{{answer.pivot.id}}"
-                                        [formControlName]="i">
-                                    <label for="float-input-answer">{{answer.name}}</label>
+                                    <input type="radio" id="float-input-answer-{{answer.pivot.id}}"
+                                        value="{{answer.pivot.id}}" [formControlName]="i">
+                                    <label for="float-input-answer-{{answer.pivot.id}}">{{answer.name}}</label>
                                 </span>
                             </div>
                         </li>

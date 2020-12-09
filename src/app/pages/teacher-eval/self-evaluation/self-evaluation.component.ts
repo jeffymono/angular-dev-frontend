@@ -83,15 +83,14 @@ export class SelfEvaluationComponent implements OnInit {
     }
 
     showEvaluationResult(): void {
-        this._router.navigate(['/teacher-eval/evaluation-results'])
+        this._router.navigate(['/teacher_eval/evaluation-results'])
     }
 
     getEvaluations(): void {
         this._spinnerService.show();
-        this._teacherEvalService.post('types_questions/registered_self_evaluations',{}).subscribe(
+        this._teacherEvalService.get('evaluations/registered_self_evaluations').subscribe(
             response => {
                 this._spinnerService.hide();
-
                 this.showEvaluationResult()
                 this.showSelfEvaluation = false
 
