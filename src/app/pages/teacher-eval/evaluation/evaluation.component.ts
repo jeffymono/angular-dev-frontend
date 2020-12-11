@@ -7,7 +7,7 @@ import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { NgxSpinnerService } from 'ngx-spinner';
-
+import { EVALUATION_TYPES } from 'src/environments/catalogues';
 
 @Component({
   selector: 'app-evaluation',
@@ -26,11 +26,12 @@ export class EvaluationComponent implements OnInit {
   typeIdEvaluation: SelectItem[];
   evaluationTypes: any[];
   teachers: any[];
-  teacherss: any[];
-  selected: any[];
+  selectedEvaluators: any[];
   detailSelected: any[];
-  selectedItems: any[];
   status: any[];
+  schoolPeriod: any[];
+  selectedEvaluationType: number;
+  filteredTeachers: any[];
 
   constructor(private _teacherEvalService: TeacherEvalService,
     private _ignugService: IgnugService,
@@ -54,10 +55,9 @@ export class EvaluationComponent implements OnInit {
 
     this.evaluationTypes = [];
     this.teachers = [];
-    this.teacherss = [];
-    this.selectedItems = [];
-
-    this.selected = [];
+    this.filteredTeachers = [];
+    this.schoolPeriod = [];
+    this.selectedEvaluators = [];
     this.detailSelected = [];
     this.status = [
       { label: '', value: '' }
@@ -71,15 +71,32 @@ export class EvaluationComponent implements OnInit {
 
   }
 
-  onSelectAdd($event) {
-    let tmp = [];
-    const selection = $event;
-    selection.forEach((item: any) => {
-      tmp.push({ id: item.value });
-    });
-    this.selected = [...tmp];
-    
+  filterTeachers(event): void {
+    this.filteredTeachers = [];
+    for (let i = 0; i < this.teachers.length; i++) {
+      let teacher = this.teachers[i];
+      if (teacher.label.toLowerCase().indexOf(event.query.toLowerCase()) === 0) {
+        this.filteredTeachers.push(teacher);
+      }
+    }
+  }
 
+  onSelectAdd(event) {
+    let search = this.selectedEvaluators.find( item => item.id === event.value)
+    return !search ? this.selectedEvaluators.push({id : event.value}) : ''
+  }
+
+  onUnSelectDelete($event){
+    let result = this.selectedEvaluators.find( item => item.id === $event.value)
+    let position = this.selectedEvaluators.indexOf(result);
+    return position >-1 ? this.selectedEvaluators.splice(position, 1) : 'ID not found'
+  }
+  
+  onChange($event) {
+    let id = $event.value;
+
+    const percentage = this.evaluationTypes.find(percentage => percentage.value === id)
+    this.selectedEvaluationType = percentage['percentage'];
   }
 
   setColsEvaluation() {
@@ -88,25 +105,50 @@ export class EvaluationComponent implements OnInit {
         { field: 'teacher.name', header: this._translate.instant('TEACHER') },
         { field: 'evaluation_type.name', header: this._translate.instant('EVALUATION TYPE') },
         { field: 'percentage', header: this._translate.instant('PERCENTAGE') },
-        { field: 'schoolPeriod.name', header: this._translate.instant('SCHOOL PERIOD') },
+        { field: 'school_period.name', header: this._translate.instant('SCHOOL PERIOD') },
         { field: 'result', header: this._translate.instant('RESULT') },
         { field: 'status.name', header: this._translate.instant('STATUS') },
-        //{ field: 'evaluators', header: this._translate.instant('EVALUETORS') },
+        { field: 'evaluators', header: this._translate.instant('EVALUETORS') },
 
       ];
     });
   }
 
-  getEvaluationTypes(): void {
-    const parameters = '?name=DOCENCIA';
-    this._teacherEvalService.get('evaluation_types' + parameters).subscribe(
+  getEvaluations() {
+    this._spinnerService.show();
+    this._teacherEvalService.get('evaluations').subscribe(
       response => {
-        const evaluationTypes = response['data'];
-        this.evaluationTypes = [{ label: 'Seleccione', value: '' }];
-        evaluationTypes.forEach(item => {
-          this.evaluationTypes.push({ label: item.name, value: item.id });
+        this._spinnerService.hide();
+        this.evaluations = response['data'];
+        this._messageService.add({
+          key: 'tst',
+          severity: 'success',
+          summary: response['msg']['summary'],
+          detail: response['msg']['detail'],
+          life: 5000
         });
-       
+      }, error => {
+        this._spinnerService.hide();
+        this._messageService.add({
+          key: 'tst',
+          severity: 'error',
+          summary: error.error.msg.summary,
+          detail: error.error.msg.detail,
+          life: 5000
+        });
+      });
+  }
+
+  getEvaluationTypes(): void {
+    this._spinnerService.show();
+    this._teacherEvalService.get('evaluation_types').subscribe(
+      response => {
+        this.evaluationTypes = [{ label: 'Seleccione', value: '' }];
+        response['data'].map((item: any) => {
+          if (item.code == EVALUATION_TYPES.PAIR_TEACHING || item.code == EVALUATION_TYPES.PAIR_MANAGEMENT) {
+            this.evaluationTypes.push({ label: item.name, value: item.id, percentage: item.percentage });
+          }
+        })
       }, error => {
         this._messageService.add({
           key: 'tst',
@@ -125,9 +167,9 @@ export class EvaluationComponent implements OnInit {
         const teachers = response['data'];
         this.teachers = [{ label: 'Seleccione', value: '' }];
         teachers.map(item => {
-          this.teachers.push({ label: item.user.first_name + ' ' + item.user.second_name + ' ' + item.user.first_lastname + ' ' + item.user.second_lastname, value: item.user.id });
+          this.teachers.push({ label: item.user.first_name + ' ' + item.user.second_name + ' ' + 
+                                  item.user.first_lastname + ' ' + item.user.second_lastname, value: item.user.id });
         });
-        
       }, error => {
         this._messageService.add({
           key: 'tst',
@@ -171,42 +213,19 @@ export class EvaluationComponent implements OnInit {
 
   getTeacherName(id: number) {
     const user = this.teachers.find(user => user.value === id)
-      return user ? user.label : ""
+    return user ? user.label : ""
   }
 
-  /*getNameEvaluator(array: []) {
-    const itr = array.map((item: any) => {
-      return item.detail_evaluationable_id;
-    });
-    //let hola = this.teachers.find(user => user.value == itr);  
-    //return hola ? hola.label: ""
-    return itr
-  }*/
-
-  getEvaluations() {
-    this._spinnerService.show();
-    this._teacherEvalService.get('evaluations').subscribe(
-      response => {
-        this._spinnerService.hide();
-        this.evaluations = response['data'];
-        this._messageService.add({
-          key: 'tst',
-          severity: 'success',
-          summary: response['msg']['summary'],
-          detail: response['msg']['detail'],
-          life: 5000
-        });
-      }, error => {
-        this._spinnerService.hide();
-        this._messageService.add({
-          key: 'tst',
-          severity: 'error',
-          summary: error.error.msg.summary,
-          detail: error.error.msg.detail,
-          life: 5000
-        });
-      });
+  getNameEvaluator(id: number) {
+    const user = this.teachers.find(user => user.value === id)
+    return user ? user.label : ''
   }
+
+  getNameSchoolPeriod(id: number) {
+    const school = this.schoolPeriod.find(school => school.value === id)
+    return school ? school.label : ''
+  }
+
   buildFormEvaluation() {
     this.formEvaluation = this._fb.group({
       id: [''],
@@ -215,33 +234,27 @@ export class EvaluationComponent implements OnInit {
       percentage: [''],
       result: [''],
       status_id: ['', Validators.required],
-      evaluators: ['', Validators.required],
+      evaluators: [''],
 
     });
   }
 
   onSubmitEvaluation(event: Event) {
     event.preventDefault();
-   
     if (this.formEvaluation.valid) {
       if (this.flagEditEvaluation) {
         this.updateEvaluation();
-       
       } else if (this.flagCreateDetailEvaluation) {
         this.createDetailEvaluation();
-       
       } else {
         this.createEvaluation();
-        
       }
     } else {
-      
       this.formEvaluation.markAllAsTouched();
     }
   }
 
   selectEvaluation(evaluation: Evaluation): void {
-    
     if (evaluation) {
       this.selectedEvaluation = evaluation;
       this.formEvaluation.controls['id'].setValue(evaluation.id);
@@ -255,7 +268,7 @@ export class EvaluationComponent implements OnInit {
       });
       this.detailSelected = [...selected];
       console.log("iTERACION DE DETAIL OBJ", this.detailSelected);*/
-      
+
       this.formEvaluation.controls['evaluators'].setValue(this.detailSelected);
 
     } else {
@@ -265,7 +278,6 @@ export class EvaluationComponent implements OnInit {
     this.displayFormEvaluation = true;
 
   }
-  
 
   createEvaluation() {
     this.selectedEvaluation = this.castEvaluation();
@@ -293,8 +305,8 @@ export class EvaluationComponent implements OnInit {
         this._messageService.add({
           key: 'tst',
           severity: 'error',
-          summary: 'Oops! Problemas con el servidor',
-          detail: 'Vuelve a intentar más tarde',
+          summary: error.error.msg.summary,
+          detail: error.error.msg.detail,
           life: 5000
         });
       });
@@ -305,11 +317,12 @@ export class EvaluationComponent implements OnInit {
     this._spinnerService.show();
     this._teacherEvalService.post('detail_evaluations', {
       evaluation: { id: this.selectedEvaluation.id },
-      evaluators: this.selected,
+      evaluators: this.selectedEvaluators,
     }).subscribe(
       response => {
         this._spinnerService.hide();
         this.formEvaluation.reset();
+        this.selectedEvaluators =[];
         this._messageService.add({
           key: 'tst',
           severity: 'success',
@@ -323,8 +336,8 @@ export class EvaluationComponent implements OnInit {
         this._messageService.add({
           key: 'tst',
           severity: 'error',
-          summary: 'Oops! Problemas con el servidor',
-          detail: 'Vuelve a intentar más tarde',
+          summary: error.error.msg.summary,
+          detail: error.error.msg.detail,
           life: 5000
         });
       });
@@ -356,8 +369,8 @@ export class EvaluationComponent implements OnInit {
         this._messageService.add({
           key: 'tst',
           severity: 'error',
-          summary: 'Oops! Problemas con el servidor',
-          detail: 'Vuelve a intentar más tarde',
+          summary: error.error.msg.summary,
+          detail: error.error.msg.detail,
           life: 5000
         });
       });
@@ -392,8 +405,8 @@ export class EvaluationComponent implements OnInit {
             this._messageService.add({
               key: 'tst',
               severity: 'error',
-              summary: 'Oops! Problemas con el servidor',
-              detail: 'Vuelve a intentar más tarde',
+              summary: error.error.msg.summary,
+              detail: error.error.msg.detail,
               life: 5000
             });
           });
@@ -404,11 +417,12 @@ export class EvaluationComponent implements OnInit {
   castEvaluation(): Evaluation {
     return {
       id: this.formEvaluation.controls['id'].value,
-      teacher: { id: this.formEvaluation.controls['teacher_id'].value },
+      teacher: { id : this.formEvaluation.controls['teacher_id'].value.value },
       evaluation_type: { id: this.formEvaluation.controls['evaluation_type_id'].value },
-      percentage: this.formEvaluation.controls['percentage'].value,
+      //school_period: { id: this.formEvaluation.controls['school_period_id'].value },
+      percentage: this.selectedEvaluationType,
       result: this.formEvaluation.controls['result'].value,
-      evaluators: [{ id: this.formEvaluation.controls['evaluators'].value }],
+      evaluators: [{ id: this.formEvaluation.controls['evaluators'].value}],
       status: { id: this.formEvaluation.controls['status_id'].value },
     } as Evaluation;
   }
