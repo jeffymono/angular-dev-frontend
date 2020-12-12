@@ -29,7 +29,7 @@ export class EvaluationComponent implements OnInit {
   selectedEvaluators: any[];
   detailSelected: any[];
   status: any[];
-  schoolPeriod: any[];
+  schoolPeriods: any[];
   selectedEvaluationType: number;
   filteredTeachers: any[];
 
@@ -56,7 +56,7 @@ export class EvaluationComponent implements OnInit {
     this.evaluationTypes = [];
     this.teachers = [];
     this.filteredTeachers = [];
-    this.schoolPeriod = [];
+    this.schoolPeriods = [];
     this.selectedEvaluators = [];
     this.detailSelected = [];
     this.status = [
@@ -82,16 +82,16 @@ export class EvaluationComponent implements OnInit {
   }
 
   onSelectAdd(event) {
-    let search = this.selectedEvaluators.find( item => item.id === event.value)
-    return !search ? this.selectedEvaluators.push({id : event.value}) : ''
+    let search = this.selectedEvaluators.find(item => item.id === event.value)
+    return !search ? this.selectedEvaluators.push({ id: event.value }) : ''
   }
 
-  onUnSelectDelete($event){
-    let result = this.selectedEvaluators.find( item => item.id === $event.value)
+  onUnSelectDelete($event) {
+    let result = this.selectedEvaluators.find(item => item.id === $event.value)
     let position = this.selectedEvaluators.indexOf(result);
-    return position >-1 ? this.selectedEvaluators.splice(position, 1) : 'ID not found'
+    return position > -1 ? this.selectedEvaluators.splice(position, 1) : 'ID not found'
   }
-  
+
   onChange($event) {
     let id = $event.value;
 
@@ -120,6 +120,13 @@ export class EvaluationComponent implements OnInit {
       response => {
         this._spinnerService.hide();
         this.evaluations = response['data'];
+        /*this.schoolPeriods = [{ label: 'Seleccione', value: '' }];
+        this.evaluations.map(item => {
+          this.schoolPeriods.push({
+            label: item.school_period.name + ' ' + item.school_period.start_date + ' - ' +
+              item.school_period.start_date, value: item.school_period.id
+          });
+        });*/
         this._messageService.add({
           key: 'tst',
           severity: 'success',
@@ -127,6 +134,11 @@ export class EvaluationComponent implements OnInit {
           detail: response['msg']['detail'],
           life: 5000
         });
+        /*let hash = {};
+        let newSchoolPeriods = this.schoolPeriods.filter(o => hash[o.value] ? false : hash[o.value] = true);
+        this.newSchoolPeriods = newSchoolPeriods
+        console.log(response);*/
+        console.log(response)
       }, error => {
         this._spinnerService.hide();
         this._messageService.add({
@@ -167,8 +179,10 @@ export class EvaluationComponent implements OnInit {
         const teachers = response['data'];
         this.teachers = [{ label: 'Seleccione', value: '' }];
         teachers.map(item => {
-          this.teachers.push({ label: item.user.first_name + ' ' + item.user.second_name + ' ' + 
-                                  item.user.first_lastname + ' ' + item.user.second_lastname, value: item.user.id });
+          this.teachers.push({
+            label: item.user.first_name + ' ' + item.user.second_name + ' ' +
+              item.user.first_lastname + ' ' + item.user.second_lastname, value: item.user.id
+          });
         });
       }, error => {
         this._messageService.add({
@@ -201,6 +215,10 @@ export class EvaluationComponent implements OnInit {
       });
   }
 
+  getSchoolPeriods(): void {
+
+  }
+
   getStatusName(id: number) {
     const status = this.status.find(stat => stat.value === id)
     return status ? status.label : ""
@@ -216,13 +234,8 @@ export class EvaluationComponent implements OnInit {
     return user ? user.label : ""
   }
 
-  getNameEvaluator(id: number) {
-    const user = this.teachers.find(user => user.value === id)
-    return user ? user.label : ''
-  }
-
   getNameSchoolPeriod(id: number) {
-    const school = this.schoolPeriod.find(school => school.value === id)
+    const school = this.schoolPeriods.find(school => school.value === id)
     return school ? school.label : ''
   }
 
@@ -231,6 +244,7 @@ export class EvaluationComponent implements OnInit {
       id: [''],
       teacher_id: ['', Validators.required],
       evaluation_type_id: ['', Validators.required],
+      //school_period_id: ['', Validators.required],
       percentage: [''],
       result: [''],
       status_id: ['', Validators.required],
@@ -260,6 +274,7 @@ export class EvaluationComponent implements OnInit {
       this.formEvaluation.controls['id'].setValue(evaluation.id);
       this.formEvaluation.controls['teacher_id'].setValue(evaluation.teacher.id);
       this.formEvaluation.controls['evaluation_type_id'].setValue(evaluation.evaluation_type.id);
+      //this.formEvaluation.controls['school_period_id'].setValue(evaluation.school_period.id);
       this.formEvaluation.controls['percentage'].setValue(evaluation.percentage);
       this.formEvaluation.controls['status_id'].setValue(evaluation.status.id);
       /*const detailEvaliations = evaluation.detail_evaluations;
@@ -286,6 +301,7 @@ export class EvaluationComponent implements OnInit {
       evaluation: this.selectedEvaluation,
       teacher: this.selectedEvaluation.teacher,
       evaluation_type: this.selectedEvaluation.evaluation_type,
+      //school_period: this.selectedEvaluation.school_period,
       status: this.selectedEvaluation.status,
     }).subscribe(
       response => {
@@ -322,7 +338,10 @@ export class EvaluationComponent implements OnInit {
       response => {
         this._spinnerService.hide();
         this.formEvaluation.reset();
-        this.selectedEvaluators =[];
+        this.selectedEvaluators = [];
+          this.getEvaluations();{
+            this._spinnerService.hide();
+          };
         this._messageService.add({
           key: 'tst',
           severity: 'success',
@@ -350,6 +369,7 @@ export class EvaluationComponent implements OnInit {
       evaluation: this.selectedEvaluation,
       teacher: this.selectedEvaluation.teacher,
       evaluation_type: this.selectedEvaluation.evaluation_type,
+      //school_period: this.selectedEvaluation.school_period,
       evaluators: this.detailSelected,
       status: this.selectedEvaluation.status,
     }).subscribe(
@@ -417,12 +437,12 @@ export class EvaluationComponent implements OnInit {
   castEvaluation(): Evaluation {
     return {
       id: this.formEvaluation.controls['id'].value,
-      teacher: { id : this.formEvaluation.controls['teacher_id'].value.value },
+      teacher: { id: this.formEvaluation.controls['teacher_id'].value.value },
       evaluation_type: { id: this.formEvaluation.controls['evaluation_type_id'].value },
       //school_period: { id: this.formEvaluation.controls['school_period_id'].value },
       percentage: this.selectedEvaluationType,
       result: this.formEvaluation.controls['result'].value,
-      evaluators: [{ id: this.formEvaluation.controls['evaluators'].value}],
+      evaluators: [{ id: this.formEvaluation.controls['evaluators'].value }],
       status: { id: this.formEvaluation.controls['status_id'].value },
     } as Evaluation;
   }

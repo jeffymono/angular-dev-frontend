@@ -58,6 +58,22 @@
                     </div>
                 </div>
 
+                <!--<div class="p-xl-12 p-sm-12" style="margin: .5em">
+                    <span class="ui-float-label">
+                        <p-dropdown id="float-input-schoolPeriod" [options]="schoolPeriods"
+                            formControlName="school_period_id"
+                            [disabled]="flagEditEvaluation || flagCreateDetailEvaluation"
+                            [pTooltip]="flagEditEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate) || flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
+                            [style]="{'width':'350px'}"></p-dropdown>
+                        <label for="float-input-schoolPeriod">* {{"SELECT SCHOOL PERIOD"|translate}}</label>
+                    </span>
+                    <div
+                        *ngIf="formEvaluation.get('school_period_id').errors && formEvaluation.get('school_period_id').touched">
+                        <p-message severity="warn" text="{{'EVALUATION TYPE REQUIRED'|translate}}"
+                            *ngIf="formEvaluation.get('school_period_id').hasError('required')"></p-message>
+                    </div>
+                </div>-->
+
                 <div class="p-xl-12 p-sm-12" style="margin: .5em">
                     <span class="ui-float-label">
                         <p-dropdown id="float-input-status" [options]="status" formControlName="status_id"
@@ -174,12 +190,13 @@
                     <td>{{rowData.teacher.name ? rowData.teacher.name : getTeacherName(rowData.teacher.id)}}</td>
                     <td>{{rowData.evaluation_type.name ? rowData.evaluation_type.name :getEvaluationTypeName(rowData.evaluation_type.id)}}</td>
                     <td>{{rowData.percentage}}</td>
+                    <!--<td>{{rowData.school_period.name ? rowData.school_period.name : getNameSchoolPeriod(rowData.school_period.id)}}</td>-->
                     <td>{{rowData.school_period_id}}</td>
                     <td>{{rowData.result}}</td>
                     <td>{{rowData.status.name ? rowData.status.name : getStatusName(rowData.status.id)}}</td>
                     <ol>
                         <ng-container *ngFor="let detail of rowData.detail_evaluations ">
-                            <li>{{getNameEvaluator(detail.detail_evaluationable_id)}}</li>
+                            <li>{{getTeacherName(detail.detail_evaluationable_id)}}</li>
                         </ng-container>
                     </ol>
 
