@@ -8,15 +8,12 @@
             <div class="p-grid">
                 <div class="p-xl-12 p-sm-12" style="margin: .5em">
                     <span class="ui-float-label">
-                        <p-dropdown id="float-input-type" formControlName="teacher_id"
-                        [disabled]="flagEditEvaluation || flagCreateDetailEvaluation"
-                        [pTooltip]="flagEditEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate) || flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
-                        [style]="{'width':'350px'}"
-                        [options]="teachers"
-                        optionLabel="label" 
-                        [filter]="true"
-                        filterBy="label"
-                        [showClear]="true"></p-dropdown>
+                        <p-dropdown id="float-input-type" [options]="teachers" formControlName="teacher_id"
+                            [disabled]="flagEditEvaluation || flagCreateDetailEvaluation"
+                            [pTooltip]="flagEditEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate) || flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
+                            [style]="{'width':'350px'}"
+                            [filter]="true"
+                            [showClear]="true"></p-dropdown>
                         <label for="float-input-type">* {{"SELECT TEACHER"|translate}}</label>
                     </span>
                     <div *ngIf="formEvaluation.get('teacher_id').errors && formEvaluation.get('teacher_id').touched">
@@ -31,7 +28,8 @@
                             formControlName="evaluation_type_id"
                             [disabled]="flagEditEvaluation || flagCreateDetailEvaluation"
                             [pTooltip]="flagEditEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate) || flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
-                            [style]="{'width':'350px'}" (onChange)="onChange($event)"></p-dropdown>
+                            [style]="{'width':'350px'}" 
+                            (onChange)="getPercentage($event)"></p-dropdown>
                         <label for="float-input-evaluationType">* {{"SELECT EVALUATION TYPE"|translate}}</label>
                     </span>
                     <div
@@ -97,8 +95,8 @@
                             (completeMethod)="filterTeachers($event)" 
                             [size]="50" 
                             [multiple]="true"
-                            (onSelect)="onSelectAdd($event)" 
-                            (onUnselect)="onUnSelectDelete($event)"
+                            (onSelect)="selectAddEvaluator($event)" 
+                            (onUnselect)="selectDeleteEvaluator($event)"
                             [minLength]="1" 
                             placeholder="SEARCH EVALUATORS..">
                             </p-autoComplete>
@@ -181,7 +179,7 @@
                             (input)="dt.filter($event.target.value, col.field, 'contains')">
 
                     </th>
-                    <th style="width: 8em;">
+                    <th style="width: 11em;">
                     </th>
                 </tr>
             </ng-template>

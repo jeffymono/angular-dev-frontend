@@ -145,7 +145,7 @@ export class PairEvaluationComponent implements OnInit {
             }
           });
           if (this.evaluatorTeaching.length && this.evaluatorManagement.length) {
-            this.listEvaluated = true;
+              this.listEvaluated = true;
           } else {
             this.displayVerificated = true;
           }

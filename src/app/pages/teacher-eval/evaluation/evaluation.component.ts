@@ -81,18 +81,18 @@ export class EvaluationComponent implements OnInit {
     }
   }
 
-  onSelectAdd(event) {
+  selectAddEvaluator(event) {
     let search = this.selectedEvaluators.find(item => item.id === event.value)
     return !search ? this.selectedEvaluators.push({ id: event.value }) : ''
   }
 
-  onUnSelectDelete($event) {
+  selectDeleteEvaluator($event) {
     let result = this.selectedEvaluators.find(item => item.id === $event.value)
     let position = this.selectedEvaluators.indexOf(result);
     return position > -1 ? this.selectedEvaluators.splice(position, 1) : 'ID not found'
   }
 
-  onChange($event) {
+  getPercentage($event) {
     let id = $event.value;
 
     const percentage = this.evaluationTypes.find(percentage => percentage.value === id)
@@ -277,15 +277,9 @@ export class EvaluationComponent implements OnInit {
       //this.formEvaluation.controls['school_period_id'].setValue(evaluation.school_period.id);
       this.formEvaluation.controls['percentage'].setValue(evaluation.percentage);
       this.formEvaluation.controls['status_id'].setValue(evaluation.status.id);
-      /*const detailEvaliations = evaluation.detail_evaluations;
-      let selected = detailEvaliations.map((item: any)=> {
-        return {id : item.detail_evaluationable_id}
-      });
-      this.detailSelected = [...selected];
-      console.log("iTERACION DE DETAIL OBJ", this.detailSelected);*/
-
-      this.formEvaluation.controls['evaluators'].setValue(this.detailSelected);
-
+      /*this.formEvaluation.controls['evaluators'].setValue(evaluation.detail_evaluations.map((item : any)=>{
+        return { id : item.detail_evaluationable_type}
+      }));*/
     } else {
       this.selectedEvaluation = {};
       this.formEvaluation.reset();
@@ -339,9 +333,8 @@ export class EvaluationComponent implements OnInit {
         this._spinnerService.hide();
         this.formEvaluation.reset();
         this.selectedEvaluators = [];
-          this.getEvaluations();{
+          this.getEvaluations()
             this._spinnerService.hide();
-          };
         this._messageService.add({
           key: 'tst',
           severity: 'success',
@@ -370,7 +363,7 @@ export class EvaluationComponent implements OnInit {
       teacher: this.selectedEvaluation.teacher,
       evaluation_type: this.selectedEvaluation.evaluation_type,
       //school_period: this.selectedEvaluation.school_period,
-      evaluators: this.detailSelected,
+      evaluators: this.selectedEvaluators,
       status: this.selectedEvaluation.status,
     }).subscribe(
       response => {
@@ -437,7 +430,7 @@ export class EvaluationComponent implements OnInit {
   castEvaluation(): Evaluation {
     return {
       id: this.formEvaluation.controls['id'].value,
-      teacher: { id: this.formEvaluation.controls['teacher_id'].value.value },
+      teacher: { id: this.formEvaluation.controls['teacher_id'].value },
       evaluation_type: { id: this.formEvaluation.controls['evaluation_type_id'].value },
       //school_period: { id: this.formEvaluation.controls['school_period_id'].value },
       percentage: this.selectedEvaluationType,
