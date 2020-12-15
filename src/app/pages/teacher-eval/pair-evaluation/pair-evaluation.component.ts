@@ -19,7 +19,6 @@ export class PairEvaluationComponent implements OnInit {
 
   msgs: Message[];
   msgs2: Message[];
-  user: any;
   status: any[];
   formPairEvaluation: FormGroup;
   questionsTeaching: any[];
@@ -27,7 +26,6 @@ export class PairEvaluationComponent implements OnInit {
   pairEvaluation: PairEvaluation;
   selectedPairEvaluation: PairEvaluation;
   displayFormPairEvaluation: boolean;
-  displaySendFormSuccess: boolean;
   displayVerificated: boolean;
   evaluatorTeaching: any[];
   evaluatorManagement: any[];
@@ -53,8 +51,6 @@ export class PairEvaluationComponent implements OnInit {
     this.questionsTeaching = [];
     this.questionsManagement = [];
 
-    this.user = JSON.parse(localStorage.getItem('user'));
-    
     this.buildformPairEvaluation();
 
   }
@@ -117,8 +113,10 @@ export class PairEvaluationComponent implements OnInit {
         const teachers = response['data'];
         this.teachers = [{ label: 'Seleccione', value: '' }];
         teachers.map(item => {
-          this.teachers.push({ label: item.user.first_name + ' ' + item.user.second_name + ' ' +
-                                  item.user.first_lastname + ' ' + item.user.second_lastname, value: item.user.id});
+          this.teachers.push({
+            label: item.user.first_name + ' ' + item.user.second_name + ' ' +
+              item.user.first_lastname + ' ' + item.user.second_lastname, value: item.user.id
+          });
         });
       }, error => {
         this._messageService.add({
@@ -132,8 +130,7 @@ export class PairEvaluationComponent implements OnInit {
   }
 
   getEvaluators(): void {
-    const parameters = '?detail_evaluationable_id=' + this.user.id;
-    this._teacherEvalService.get('detail_evaluations' + parameters).subscribe(
+    this._teacherEvalService.get('detail_evaluations').subscribe(
       response => {
         if (response !== null) {
           this._spinnerService.hide();
@@ -145,7 +142,7 @@ export class PairEvaluationComponent implements OnInit {
             }
           });
           if (this.evaluatorTeaching.length && this.evaluatorManagement.length) {
-              this.listEvaluated = true;
+            this.listEvaluated = true;
           } else {
             this.displayVerificated = true;
           }
@@ -208,12 +205,10 @@ export class PairEvaluationComponent implements OnInit {
     this.detailEvaluationManagement = detailManagement.id
   }
 
-  return(event: any) {
-    const detailTeaching = this.evaluatorTeaching.find(id => id.id === this.detailEvaluationTeachining)
-    let position = this.evaluatorTeaching.indexOf(detailTeaching);
-    if (position > -1) {
-      this.evaluatorTeaching.splice(position, 1)
-    }
+  return() {
+    const indiceUser = this.evaluatorTeaching
+      .findIndex(element => element.id === this.detailEvaluationTeachining);
+    this.evaluatorTeaching.splice(indiceUser, 1);
     if (this.evaluatorTeaching.length) {
       this.listEvaluated = true
     } else {
@@ -256,7 +251,7 @@ export class PairEvaluationComponent implements OnInit {
       answer_questions: this.selectedPairEvaluation.answer_questions
     }).subscribe(
       response => {
-        this._spinnerService.hide();
+        this._spinnerService.show();
         this.formPairEvaluation.reset();
         this._messageService.add({
           key: 'tst',
@@ -267,7 +262,6 @@ export class PairEvaluationComponent implements OnInit {
         });
       }, error => {
         this._spinnerService.hide();
-        this.displayFormPairEvaluation = false;
         this._messageService.add({
           key: 'tst',
           severity: 'error',
@@ -285,11 +279,12 @@ export class PairEvaluationComponent implements OnInit {
       answer_questions: this.selectedPairEvaluation.answer_questions
     }).subscribe(
       response => {
-        this._spinnerService.hide();
-        this.formPairEvaluation.reset();
-        this.displaySendFormSuccess = true;
+        this._spinnerService.show();
         this.displayFormPairEvaluation = false;
+        this.formPairEvaluation.reset();
         this.updateEvaluationPair();
+        this.return();
+        this._spinnerService.show()
         this._messageService.add({
           key: 'tst',
           severity: 'success',
