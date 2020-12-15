@@ -11,7 +11,9 @@
                         <p-dropdown id="float-input-type" [options]="teachers" formControlName="teacher_id"
                             [disabled]="flagEditEvaluation || flagCreateDetailEvaluation"
                             [pTooltip]="flagEditEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate) || flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
-                            [style]="{'width':'235px'}"></p-dropdown>
+                            [style]="{'width':'350px'}"
+                            [filter]="true"
+                            [showClear]="true"></p-dropdown>
                         <label for="float-input-type">* {{"SELECT TEACHER"|translate}}</label>
                     </span>
                     <div *ngIf="formEvaluation.get('teacher_id').errors && formEvaluation.get('teacher_id').touched">
@@ -19,13 +21,15 @@
                             *ngIf="formEvaluation.get('teacher_id').hasError('required')"></p-message>
                     </div>
                 </div>
-                
+
                 <div class="p-xl-12 p-sm-12" style="margin: .5em">
                     <span class="ui-float-label">
                         <p-dropdown id="float-input-evaluationType" [options]="evaluationTypes"
-                            formControlName="evaluation_type_id" [disabled]="flagEditEvaluation || flagCreateDetailEvaluation"
+                            formControlName="evaluation_type_id"
+                            [disabled]="flagEditEvaluation || flagCreateDetailEvaluation"
                             [pTooltip]="flagEditEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate) || flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
-                            [style]="{'width':'235px'}"></p-dropdown>
+                            [style]="{'width':'350px'}" 
+                            (onChange)="getPercentage($event)"></p-dropdown>
                         <label for="float-input-evaluationType">* {{"SELECT EVALUATION TYPE"|translate}}</label>
                     </span>
                     <div
@@ -35,12 +39,13 @@
                     </div>
                 </div>
 
-                <div class="p-xl-12 p-sm-12" style="margin: .5em">
+                <div class="p-xl-12 p-sm-12" style="margin: .5em"
+                    *ngIf="flagEditEvaluation || flagCreateDetailEvaluation">
                     <span class="ui-float-label">
-                        <input id="float-input-percentage" type="text" pInputText formControlName="percentage" 
-                        [readOnly]="flagEditEvaluation || flagCreateDetailEvaluation "
-                        [pTooltip]="flagEditEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate) || flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
-                        size="30">
+                        <input id="float-input-percentage" type="text" pInputText formControlName="percentage" size="30"
+                            [readOnly]="flagEditEvaluation || flagCreateDetailEvaluation"
+                            [pTooltip]="flagEditEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate) || flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
+                            style ="width :350px">
                         <label for="float-input-percentage">* {{"PERCENTAGE"|translate}}</label>
                     </span>
                     <div *ngIf="formEvaluation.get('percentage').errors && formEvaluation.get('percentage').touched">
@@ -51,10 +56,26 @@
                     </div>
                 </div>
 
+                <!--<div class="p-xl-12 p-sm-12" style="margin: .5em">
+                    <span class="ui-float-label">
+                        <p-dropdown id="float-input-schoolPeriod" [options]="schoolPeriods"
+                            formControlName="school_period_id"
+                            [disabled]="flagEditEvaluation || flagCreateDetailEvaluation"
+                            [pTooltip]="flagEditEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate) || flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
+                            [style]="{'width':'350px'}"></p-dropdown>
+                        <label for="float-input-schoolPeriod">* {{"SELECT SCHOOL PERIOD"|translate}}</label>
+                    </span>
+                    <div
+                        *ngIf="formEvaluation.get('school_period_id').errors && formEvaluation.get('school_period_id').touched">
+                        <p-message severity="warn" text="{{'EVALUATION TYPE REQUIRED'|translate}}"
+                            *ngIf="formEvaluation.get('school_period_id').hasError('required')"></p-message>
+                    </div>
+                </div>-->
+
                 <div class="p-xl-12 p-sm-12" style="margin: .5em">
                     <span class="ui-float-label">
                         <p-dropdown id="float-input-status" [options]="status" formControlName="status_id"
-                            [style]="{'width':'235px'}"></p-dropdown>
+                            [style]="{'width':'350px'}"></p-dropdown>
                         <label for="float-input-status">* {{"SELECT STATUS"|translate}}</label>
                     </span>
                     <div *ngIf="formEvaluation.get('status_id').errors && formEvaluation.get('status_id').touched">
@@ -63,17 +84,24 @@
                     </div>
                 </div>
 
-                <div class="p-xl-12 p-sm-12" style="margin: .5em" *ngIf="flagEditEvaluation || flagCreateDetailEvaluation">
-                    <label for="float-input-type">* {{"SELECT EVALUATORS"|translate}}</label>
+                <div class="p-xl-12 p-sm-12" style="margin: .5em"
+                    *ngIf="flagEditEvaluation || flagCreateDetailEvaluation">
                     <span class="ui-float-label">
-<!--                        <ng-select  formControlName="evaluators"-->
-<!--                            [items]="teachers" -->
-<!--                            bindLabel="label"-->
-<!--                            [multiple]="true" -->
-<!--                            [(ngModel)]="selectedItems" -->
-<!--                            (change)="onSelectAdd($event)">-->
-<!--                        </ng-select>-->
-                        <!--<br />Selected : {{selected | json}}-->
+                        <span class="p-fluid">
+                            <p-autoComplete 
+                            formControlName="evaluators"
+                            [suggestions]="filteredTeachers" 
+                            field="label"
+                            (completeMethod)="filterTeachers($event)" 
+                            [size]="50" 
+                            [multiple]="true"
+                            (onSelect)="selectAddEvaluator($event)" 
+                            (onUnselect)="selectDeleteEvaluator($event)"
+                            [minLength]="1" 
+                            placeholder="SEARCH EVALUATORS..">
+                            </p-autoComplete>
+                        </span>
+                        <label for="float-input-type">* {{"SELECT EVALUATORS"|translate}}</label>
                     </span>
                     <div *ngIf="formEvaluation.get('evaluators').errors && formEvaluation.get('evaluators').touched">
                         <p-message severity="warn" text="{{'EVALUATORS REQUIRED'|translate}}"
@@ -113,7 +141,7 @@
                         {{col.header}}
                         <p-sortIcon [field]="col.field"></p-sortIcon>
                     </th>
-                    <th style="width: 11em; text-align: center;">
+                    <th style="width: 8em; text-align: center;">
                         <button pButton type="button" icon="pi pi-plus" [pTooltip]="'NEW RECORD'|translate"
                             class="ui-button-success"
                             (click)="selectEvaluation(null);flagEditEvaluation = false; flagCreateDetailEvaluation = false;"></button>
@@ -133,7 +161,7 @@
                             [placeholder]="('SEARCH BY'|translate) + ' ' +('PERCENTAGE'|translate)"
                             class="ui-column-filter" style="width: 100%; margin-top: 0;"
                             (input)="dt.filter($event.target.value, col.field, 'contains')">
-                        <input *ngSwitchCase="'schoolPeriod.name'" pInputText type="text"
+                        <input *ngSwitchCase="'school_period.name'" pInputText type="text"
                             [placeholder]="('SEARCH BY'|translate) + ' ' +('EVALUATION TYPE'|translate)"
                             class="ui-column-filter" style="width: 100%; margin-top: 0;"
                             (input)="dt.filter($event.target.value, col.field, 'contains')">
@@ -145,13 +173,13 @@
                             [placeholder]="('SEARCH BY'|translate) + ' ' + ('STATUS'|translate)"
                             class="ui-column-filter" style="width: 100%; margin-top: 0;"
                             (input)="dt.filter($event.target.value, col.field, 'contains')">
-                        <!--<input *ngSwitchCase="'evaluators'" pInputText type="text"
+                        <input *ngSwitchCase="'evaluators'" pInputText type="text"
                             [placeholder]="('SEARCH BY'|translate) + ' ' + ('EVALUATORS'|translate)"
                             class="ui-column-filter" style="width: 100%; margin-top: 0;"
-                            (input)="dt.filter($event.target.value, col.field, 'contains')">-->
+                            (input)="dt.filter($event.target.value, col.field, 'contains')">
 
                     </th>
-                    <th style="width: 8em;">
+                    <th style="width: 11em;">
                     </th>
                 </tr>
             </ng-template>
@@ -160,17 +188,22 @@
                     <td>{{rowData.teacher.name ? rowData.teacher.name : getTeacherName(rowData.teacher.id)}}</td>
                     <td>{{rowData.evaluation_type.name ? rowData.evaluation_type.name :getEvaluationTypeName(rowData.evaluation_type.id)}}</td>
                     <td>{{rowData.percentage}}</td>
+                    <!--<td>{{rowData.school_period.name ? rowData.school_period.name : getNameSchoolPeriod(rowData.school_period.id)}}</td>-->
                     <td>{{rowData.school_period_id}}</td>
                     <td>{{rowData.result}}</td>
                     <td>{{rowData.status.name ? rowData.status.name : getStatusName(rowData.status.id)}}</td>
-                    <!--<td>{{getNameEvaluator(rowData.detail_evaluations)}}</td>
-                    <td>{{rowData.detail_evaluations}}</td>-->
+                    <ol>
+                        <ng-container *ngFor="let detail of rowData.detail_evaluations ">
+                            <li>{{getTeacherName(detail.detail_evaluationable_id)}}</li>
+                        </ng-container>
+                    </ol>
+
                     <td>
-                    <button pButton type="button" class="ui-button-success" icon="pi pi-user-plus"
+                        <button pButton type="button" class="ui-button-success" icon="pi pi-user-plus"
                             style="margin-right: .5em" [pTooltip]="'ADD EVALUATORS'|translate"
                             (click)="selectEvaluation(rowData);flagCreateDetailEvaluation = true; flagEditEvaluation = false;"></button>
 
-                    <!--<button pButton type="button" class="ui-button-primary" icon="pi pi-user-edit"
+                        <!--<button pButton type="button" class="ui-button-primary" icon="pi pi-user-edit"
                             style="margin-right: .5em" [pTooltip]="'MODIFY RECORD'|translate"
                             (click)="selectEvaluation(rowData);flagEditEvaluation = true; flagCreateDetailEvaluation = flase;"></button>-->
 

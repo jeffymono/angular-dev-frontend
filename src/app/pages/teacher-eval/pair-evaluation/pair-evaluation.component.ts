@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { BreadcrumbService } from '../../../shared/breadcrumb.service';
 import { MessageService } from 'primeng/api';
+import { IgnugService } from '../../../services/ignug/ignug.service';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { TeacherEvalService } from '../../../services/teacher-eval/teacher-eval.service';
 import { TranslateService } from '@ngx-translate/core';
 import { PairEvaluation } from 'src/app/models/teacher-eval/pair-evaluation';
 import { EVALUATION_TYPES } from 'src/environments/catalogues';
-import { getInterpolationArgsLength } from '@angular/compiler/src/render3/view/util';
+import { Message } from 'primeng/api';
 
 @Component({
   selector: 'app-pair-evaluation',
@@ -16,6 +17,8 @@ import { getInterpolationArgsLength } from '@angular/compiler/src/render3/view/u
 })
 export class PairEvaluationComponent implements OnInit {
 
+  msgs: Message[];
+  msgs2: Message[];
   status: any[];
   formPairEvaluation: FormGroup;
   questionsTeaching: any[];
@@ -23,25 +26,28 @@ export class PairEvaluationComponent implements OnInit {
   pairEvaluation: PairEvaluation;
   selectedPairEvaluation: PairEvaluation;
   displayFormPairEvaluation: boolean;
-  displaySendFormSuccess: boolean;
   displayVerificated: boolean;
-  displayVisible: boolean;
   evaluatorTeaching: any[];
   evaluatorManagement: any[];
-  detailEvaluatorTeachining: number;
-  detailEvaluatorManagement: number;
+  teachers: any[];
+  detailEvaluationTeachining: any[];
+  detailEvaluationManagement: any[];
+  listEvaluated: boolean;
 
   constructor(private _breadcrumbService: BreadcrumbService,
     private _fb: FormBuilder,
     private _spinnerService: NgxSpinnerService,
     private _teacherEvalService: TeacherEvalService,
     private _messageService: MessageService,
-    private _translate: TranslateService
+    private _translate: TranslateService,
+    private _ignugService: IgnugService,
   ) {
     this._breadcrumbService.setItems([
       { label: 'pairEvaluations' }
     ]);
 
+    this.detailEvaluationTeachining = [];
+    this.detailEvaluationManagement = [];
     this.questionsTeaching = [];
     this.questionsManagement = [];
 
@@ -53,32 +59,94 @@ export class PairEvaluationComponent implements OnInit {
 
     this.evaluatorTeaching = [];
     this.evaluatorManagement = [];
+    this.teachers = [];
+    this.msgs = [
+      {
+        severity: 'info',
+        summary: 'Sin docentes a evaluar',
+        detail: 'No constas como evaluador.'
+      }
+    ];
+    this.msgs2 = [
+      {
+        severity: 'success',
+        summary: 'Evaluación registrada',
+        detail: 'La evaluación se ha registrado'
+      }
+    ];
 
     this.getQuestions();
     this.getEvaluators();
+    this.getTeachers();
 
   }
+
+  updateEvaluationPair() {
+    this._spinnerService.hide();
+    this._teacherEvalService.post('evaluations/pair_evaluations', {})
+      .subscribe(
+        response => {
+          this._spinnerService.hide();
+          this._messageService.add({
+            key: 'tst',
+            severity: 'success',
+            summary: response['msg']['summary'],
+            detail: response['msg']['detail'],
+            life: 5000
+          });
+        }, error => {
+          this._spinnerService.hide();
+          this._messageService.add({
+            key: 'tst',
+            severity: 'error',
+            summary: error.error.msg.summary,
+            detail: error.error.msg.detail,
+            life: 5000
+          });
+        });
+  }
+
+  getTeachers(): void {
+    this._spinnerService.show();
+    this._ignugService.get('teachers').subscribe(
+      response => {
+        const teachers = response['data'];
+        this.teachers = [{ label: 'Seleccione', value: '' }];
+        teachers.map(item => {
+          this.teachers.push({
+            label: item.user.first_name + ' ' + item.user.second_name + ' ' +
+              item.user.first_lastname + ' ' + item.user.second_lastname, value: item.user.id
+          });
+        });
+      }, error => {
+        this._messageService.add({
+          key: 'tst',
+          severity: 'error',
+          summary: error.error.msg.summary,
+          detail: error.error.msg.detail,
+          life: 5000
+        });
+      });
+  }
+
   getEvaluators(): void {
-    const parameters = '?detail_evaluationable_id= 2';
-    this._teacherEvalService.get('detail_evaluations' + parameters).subscribe(
+    this._teacherEvalService.get('detail_evaluations').subscribe(
       response => {
         if (response !== null) {
           this._spinnerService.hide();
-          this.displayVisible = true;
           response['data'].map((item: any) => {
             if (item.evaluation.evaluation_type_id == EVALUATION_TYPES.PAIR_TEACHING) {
-              this.evaluatorTeaching.push({ id: item.id })
+              this.evaluatorTeaching.push({ id: item.id, evaluator: item.detail_evaluationable_id, evaluated: item.evaluation.teacher_id })
             } else if (item.evaluation.evaluation_type_id == EVALUATION_TYPES.PAIR_MANAGEMENT) {
-              this.evaluatorManagement.push({ id: item.id })
+              this.evaluatorManagement.push({ id: item.id, evaluator: item.detail_evaluationable_id, evaluated: item.evaluation.teacher_id })
             }
-          })
-          for (let i = 0; i < this.evaluatorTeaching.length; i++) {
-            this.detailEvaluatorTeachining = this.evaluatorTeaching[i];
+          });
+          if (this.evaluatorTeaching.length && this.evaluatorManagement.length) {
+            this.listEvaluated = true;
+          } else {
+            this.displayVerificated = true;
           }
-          for (let i = 0; i < this.evaluatorManagement.length; i++) {
-            this.detailEvaluatorManagement = this.evaluatorManagement[i];
-          }
-        }else{
+        } else {
           this.displayVerificated = true;
         }
       }, error => {
@@ -93,15 +161,11 @@ export class PairEvaluationComponent implements OnInit {
         });
       });
   }
-
   getQuestions(): void {
     this._spinnerService.show();
-    this.displayFormPairEvaluation = false;
     this._teacherEvalService.get('types_questions/pair_evaluations').subscribe(
       response => {
         this._spinnerService.hide();
-        this.displayFormPairEvaluation = true;
-
         response['data'].map(question => {
           if (question.evaluation_type_id == EVALUATION_TYPES.PAIR_TEACHING) {
             this.questionsTeaching.push(question)
@@ -119,7 +183,7 @@ export class PairEvaluationComponent implements OnInit {
         })
 
       }, error => {
-        //this._spinnerService.hide();
+        this._spinnerService.hide();
         this._messageService.add({
           key: 'tst',
           severity: 'error',
@@ -130,6 +194,27 @@ export class PairEvaluationComponent implements OnInit {
       });
   }
 
+  getTeacherName(id: number) {
+    const user = this.teachers.find(user => user.value === id)
+    return user ? user.label : ""
+  }
+
+  selectEvaluation(event: any): void {
+    this.detailEvaluationTeachining = event.id
+    const detailManagement = this.evaluatorManagement.find(id => id.evaluated === event.evaluated)
+    this.detailEvaluationManagement = detailManagement.id
+  }
+
+  return() {
+    const indiceUser = this.evaluatorTeaching
+      .findIndex(element => element.id === this.detailEvaluationTeachining);
+    this.evaluatorTeaching.splice(indiceUser, 1);
+    if (this.evaluatorTeaching.length) {
+      this.listEvaluated = true
+    } else {
+      this.getEvaluators()
+    }
+  }
 
 
   buildformPairEvaluation() {
@@ -162,11 +247,11 @@ export class PairEvaluationComponent implements OnInit {
     this.selectedPairEvaluation = this.castPairEvaluationTeaching();
     this._spinnerService.show();
     this._teacherEvalService.post('pair_evaluations/teachers', {
-      detail_evaluation: this.detailEvaluatorTeachining,
+      detail_evaluation: { id: this.selectedPairEvaluation.detail_evaluation },
       answer_questions: this.selectedPairEvaluation.answer_questions
     }).subscribe(
       response => {
-        this._spinnerService.hide();
+        this._spinnerService.show();
         this.formPairEvaluation.reset();
         this._messageService.add({
           key: 'tst',
@@ -190,14 +275,16 @@ export class PairEvaluationComponent implements OnInit {
     this.selectedPairEvaluation = this.castPairEvaluationManagement();
     this._spinnerService.show();
     this._teacherEvalService.post('pair_evaluations/teachers', {
-      detail_evaluation: this.detailEvaluatorManagement,
+      detail_evaluation: { id: this.selectedPairEvaluation.detail_evaluation },
       answer_questions: this.selectedPairEvaluation.answer_questions
     }).subscribe(
       response => {
-        this._spinnerService.hide();
-        this.formPairEvaluation.reset();
+        this._spinnerService.show();
         this.displayFormPairEvaluation = false;
-        this.displaySendFormSuccess = true;
+        this.formPairEvaluation.reset();
+        this.updateEvaluationPair();
+        this.return();
+        this._spinnerService.show()
         this._messageService.add({
           key: 'tst',
           severity: 'success',
@@ -220,6 +307,7 @@ export class PairEvaluationComponent implements OnInit {
   castPairEvaluationTeaching(): PairEvaluation {
     return {
       id: this.formPairEvaluation.controls['id'].value,
+      detail_evaluation: this.detailEvaluationTeachining,
       answer_questions: this.formPairEvaluation.controls['teachingArray'].value.map((answer_question_id: any) => {
         return { id: answer_question_id }
       }),
@@ -229,6 +317,7 @@ export class PairEvaluationComponent implements OnInit {
   castPairEvaluationManagement(): PairEvaluation {
     return {
       id: this.formPairEvaluation.controls['id'].value,
+      detail_evaluation: this.detailEvaluationManagement,
       answer_questions: this.formPairEvaluation.controls['managementArray'].value.map((answer_question_id: any) => {
         return { id: answer_question_id }
       }),

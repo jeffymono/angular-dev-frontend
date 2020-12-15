@@ -16,6 +16,7 @@ import {InputTextModule} from 'primeng/inputtext';
 import {InputTextareaModule} from 'primeng/inputtextarea';
 import {CardModule} from 'primeng/card';
 import {MessageModule} from 'primeng/message';
+import {MessagesModule} from 'primeng/messages';
 import {DropdownModule} from 'primeng/dropdown';
 import {ButtonModule} from 'primeng/button';
 import {DialogModule} from 'primeng/dialog';
@@ -25,6 +26,8 @@ import {TableModule} from 'primeng/table';
 import {ConfirmationService, MessageService} from 'primeng/api';
 import {TooltipModule} from 'primeng/tooltip';
 import {TabViewModule} from 'primeng/tabview';
+import {ToolbarModule} from 'primeng/toolbar';
+import {AutoCompleteModule} from 'primeng/autocomplete';
 import {SelfEvaluationComponent} from './self-evaluation/self-evaluation.component';
 import {StudentEvaluationComponent} from './student-evaluation/student-evaluation.component';
 import {EvaluationResultComponent} from './evaluation-result/evaluation-result.component';
@@ -48,6 +51,7 @@ import {PairEvaluationComponent} from './pair-evaluation/pair-evaluation.compone
         InputTextareaModule,
         CardModule,
         MessageModule,
+        MessagesModule,
         TranslateModule,
         DropdownModule,
         ReactiveFormsModule,
@@ -57,7 +61,10 @@ import {PairEvaluationComponent} from './pair-evaluation/pair-evaluation.compone
         ToastModule,
         TableModule,
         TooltipModule,
-        TabViewModule
+        TabViewModule,
+        ToolbarModule,
+        AutoCompleteModule
+
     ],
     providers: [ConfirmationService, MessageService]
 

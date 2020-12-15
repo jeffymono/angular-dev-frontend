@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { BreadcrumbService } from '../../../shared/breadcrumb.service';
+import { EVALUATION_TYPES } from 'src/environments/catalogues';
 
 @Component({
   selector: 'app-question',
@@ -72,14 +73,19 @@ export class QuestionComponent implements OnInit {
   }
 
   getEvaluationTypes(): void {
-    const parameters = '?name=DOCENCIA';
-    this._teacherEvalService.get('evaluation_types' + parameters).subscribe(
+    this._spinnerService.show();
+    this._teacherEvalService.get('evaluation_types').subscribe(
       response => {
-        const evaluationTypes = response['data'];
         this.evaluationTypes = [{ label: 'Seleccione', value: '' }];
-        evaluationTypes.forEach(item => {
-          this.evaluationTypes.push({ label: item.name, value: item.id });
-        });
+        response['data'].map((item: any) => {
+          if (item.code == EVALUATION_TYPES.SELF_TEACHING || item.code == EVALUATION_TYPES.SELF_MANAGEMENT ||
+              item.code == EVALUATION_TYPES.STUDENT_TEACHING || item.code == EVALUATION_TYPES.STUDENT_MANAGEMENT ||
+              item.code == EVALUATION_TYPES.PAIR_TEACHING || item.code == EVALUATION_TYPES.PAIR_MANAGEMENT ||
+              item.code == EVALUATION_TYPES.AUTHORITY_TEACHING || item.code == EVALUATION_TYPES.AUTHORITY_MANAGEMENT
+            ) {
+            this.evaluationTypes.push({ label: item.name, value: item.id });
+          }
+        })
       }, error => {
         this._messageService.add({
           key: 'tst',
