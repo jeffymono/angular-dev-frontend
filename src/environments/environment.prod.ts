@@ -13,7 +13,7 @@ export const environment = {
     API_URL_COMMUNITY: URL + 'api/community/',
 
     CLIENT_ID: '1',
-    CLIENT_SECRET: 'GDzbRSqS5Xjt2iFyfOwbtSkVBwLmXHyYkEMccLGv',
+    CLIENT_SECRET: 'DneoTCgqQagMpL5XBwDlcYsGayobUbIJw7gd9bit',
     GRANT_TYPE: 'password',
 
     APP_ACRONYM: 'IGNUG',
