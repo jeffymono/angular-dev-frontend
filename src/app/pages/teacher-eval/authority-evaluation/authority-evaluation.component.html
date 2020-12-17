@@ -1,0 +1,76 @@
+<p-messages *ngIf="displayVerificated" [(value)]="msgs" [closable]="false"></p-messages>
+
+<div *ngIf="listEvaluated">
+    <p-toolbar *ngFor="let evaluation of evaluatorTeaching">
+        <div class="p-toolbar-group-left">
+            <p><b>Docente a evaluar:</b> {{getTeacherName(evaluation.evaluated)}}</p>
+        </div>
+        <div class="p-toolbar-group-right">
+            <p-button label="Evaluar" icon="pi pi-check" (click)="selectEvaluation(evaluation); displayFormAuthorityEvaluation = true;
+            listEvaluated = false" class="p-mr-2"></p-button>
+        </div>
+    </p-toolbar>
+</div>
+<form [formGroup]="formAuthorityEvaluation" (ngSubmit)="onSubmitAuthorityEvaluation($event)" *ngIf="displayFormAuthorityEvaluation">
+    <p-card>
+        <p-header>
+            <h1 style="margin-left: .5em">{{"AUTHORITY-EVALUATION"|translate}}</h1>
+        </p-header>
+        <div class="p-grid">
+            <ol class="p-xl-12 p-sm-12" style="margin: .5em">
+                <span class="ui-float-label" formArrayName="teachingArray">
+                    <li for="float-input-question" class="p-xl-12 p-sm-12" style="margin: .5em"
+                        *ngFor="let question of teachingArray.controls; index as i">
+                        <label>{{questionsTeaching[i].name}}</label>
+                        <span *ngIf="teachingArray.controls[i].errors && teachingArray.controls[i].touched">
+                            <p-message severity="warn" text="{{'QUESTION REQUIRED'|translate}}"
+                                *ngIf="teachingArray.controls[i].hasError('required')"></p-message>
+                            <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
+                                *ngIf="teachingArray.controls[i].hasError('minlength')"></p-message>
+                        </span>
+                        <div class="p-text-light">{{questionsTeaching[i].description}}</div>
+                        <div class="p-xl-12 p-sm-12" style="margin: .5em"
+                            *ngFor="let answer of questionsTeaching[i].answers">
+                            <span class="ui-float-label">
+                                <input type="radio" for="float-input-answer" value="{{answer.pivot.id}}"
+                                    [formControlName]="i">
+                                <label for="float-input-answer">{{answer.name}}</label>
+                            </span>
+                        </div>
+                    </li>
+                </span>
+                <span class="ui-float-label" formArrayName="managementArray">
+                    <li for="float-input-question" class="p-xl-12 p-sm-12" style="margin: .5em"
+                        *ngFor="let question of managementArray.controls; index as i">
+                        <label>{{questionsManagement[i].name}}</label>
+                        <span *ngIf="managementArray.controls[i].errors && managementArray.controls[i].touched">
+                            <p-message severity="warn" text="{{'QUESTION REQUIRED'|translate}}"
+                                *ngIf="managementArray.controls[i].hasError('required')"></p-message>
+                            <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
+                                *ngIf="managementArray.controls[i].hasError('minlength')"></p-message>
+                        </span>
+                        <div class="p-text-light">{{questionsManagement[i].description}}</div>
+                        <div class="p-xl-12 p-sm-12" style="margin: .5em"
+                            *ngFor="let answer of questionsManagement[i].answers">
+                            <span class="ui-float-label">
+                                <input type="radio" for="float-input-answer" value="{{answer.pivot.id}}"
+                                    [formControlName]="i">
+                                <label for="float-input-answer">{{answer.name}}</label>
+                            </span>
+                        </div>
+                    </li>
+                </span>
+
+            </ol>
+
+        </div>
+        <p-footer>
+            <div class="p-fluid p-formgrid p-grid">
+                <div class="p-field p-col">
+                    <button type="submit" pButton icon="pi pi-save" class="ui-button-primary"
+                        label="{{'SEND'|translate}}"></button>
+                </div>
+            </div>
+        </p-footer>
+    </p-card>
+</form>
