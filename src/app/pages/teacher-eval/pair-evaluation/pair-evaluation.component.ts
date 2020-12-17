@@ -33,6 +33,7 @@ export class PairEvaluationComponent implements OnInit {
   detailEvaluationTeachining: any[];
   detailEvaluationManagement: any[];
   listEvaluated: boolean;
+  teacherEvaluated: number;
 
   constructor(private _breadcrumbService: BreadcrumbService,
     private _fb: FormBuilder,
@@ -203,6 +204,7 @@ export class PairEvaluationComponent implements OnInit {
     this.detailEvaluationTeachining = event.id
     const detailManagement = this.evaluatorManagement.find(id => id.evaluated === event.evaluated)
     this.detailEvaluationManagement = detailManagement.id
+    this.teacherEvaluated = event.evaluated
   }
 
   return() {

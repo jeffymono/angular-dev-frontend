@@ -3,7 +3,7 @@
 <div *ngIf="listEvaluated">
     <p-toolbar *ngFor="let evaluation of evaluatorTeaching">
         <div class="p-toolbar-group-left">
-            <p><b>Docente a evaluar:</b> {{getTeacherName(evaluation.evaluated)}}</p>
+            <div class="p-text-uppercase"><b>Docente a evaluar:</b> {{getTeacherName(evaluation.evaluated)}}</div>
         </div>
         <div class="p-toolbar-group-right">
             <p-button label="Evaluar" icon="pi pi-check" (click)="selectEvaluation(evaluation); displayFormPairEvaluation = true;
@@ -17,6 +17,7 @@
         <p-header>
             <h1 style="margin-left: .5em">{{"PAIR-EVALUATION"|translate}}</h1>
         </p-header>
+        <div class="p-text-uppercase" style="font-size: 16px"><p><b>Evaluando a:</b> {{getTeacherName(teacherEvaluated)}}</p></div>
         <div class="p-grid">
             <ol class="p-xl-12 p-sm-12" style="margin: .5em">
                 <span class="ui-float-label" formArrayName="teachingArray">
