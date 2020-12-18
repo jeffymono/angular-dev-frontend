@@ -38,14 +38,15 @@ export class EvaluationResultComponent implements OnInit {
   setColsEvaluationResult() {
     this._translate.stream('CODE').subscribe(response => {
       this.colsEvaluationResult = [
-        /* { field: 'teacher', header: this._translate.instant('TEACHER') }, */
         { field: 'evaluation_type', header: this._translate.instant('EVALUATION TYPE') },
         { field: 'school_period', header: this._translate.instant('SCHOOL PERIOD') },
         { field: 'result', header: this._translate.instant('RESULT') },
-        { field: 'percentage', header: this._translate.instant('PERCENTAGE') },
-        { field: 'status', header: this._translate.instant('STATUS') },
       ];
     });
+  }
+
+  getResultFinal(result:any){
+    return result *100/4;
   }
 
   getEvaluations(): void {
