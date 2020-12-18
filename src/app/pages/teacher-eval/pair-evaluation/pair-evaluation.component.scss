@@ -1,17 +1,38 @@
 .mydialog {
-    width: 50vw;
+  width: 50vw;
+}
+
+.greenText a {
+  color: green;
+}
+
+.ui-tabview-selected {
+  background-color: red !important;
+}
+
+@media screen and (max-width: 40em) {
+  .mydialog {
+    width: 75vw;
   }
-  
-  .greenText a {
-    color: green;
+}
+@media screen and (max-width: 683px) {
+  .p-d-flexo {
+    display: block;
   }
-  
-  .ui-tabview-selected {
-    background-color: red !important;
+}
+@media screen and (min-width: 683px) {
+  .p-d-flexo {
+    display: flex;
   }
-  
-  @media screen and (max-width: 40em) {
-    .mydialog {
-      width: 75vw;
-    }
-  }
+}
+.answers-questions{
+  flex-direction: column;
+  align-items: center;
+}
+.answers-questions li::marker {
+  font-weight: bold;
+}
+.centrado{
+  width: fit-content;
+  margin: auto;
+}

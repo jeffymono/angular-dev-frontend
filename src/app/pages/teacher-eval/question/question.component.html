@@ -1,5 +1,5 @@
 <p-dialog [header]="headerDialogQuestion" [(visible)]="displayFormQuestion" modal="true" showEffect="fade"
-    styleClass="mydialog">
+    styleClass="mydialog" [style]="{width: '50%'}">
     <form [formGroup]="formQuestion" (ngSubmit)="onSubmitQuestion($event)">
         <p-card>
             <p-header>
@@ -74,7 +74,7 @@
 
                 <div class="p-xl-12 p-sm-12" style="margin: .5em">
                     <span class="ui-float-label">
-                        <input id="float-input-name" type="text" pInputText formControlName="name" size="30">
+                        <textarea id="float-input-name" formControlName="name" rows="2" cols="32" pInputTextarea ></textarea>
                         <label for="float-input-name">* {{"NAME"|translate}}</label>
                     </span>
                     <div *ngIf="formQuestion.get('name').errors && formQuestion.get('name').touched">
@@ -87,7 +87,7 @@
 
                 <div class="p-xl-12 p-sm-12" style="margin: .5em">
                     <span class="ui-float-label">
-                        <input id="float-input-description" type="text" pInputText formControlName="description" size="30">
+                        <textarea id="float-input-description" formControlName="description" rows="2" cols="32" pInputTextarea ></textarea>
                         <label for="float-input-description">* {{"DESCRIPTION"|translate}}</label>
                     </span>
                     <div *ngIf="formQuestion.get('description').errors && formQuestion.get('description').touched">
@@ -175,7 +175,8 @@
                     <td>{{rowData.order}}</td>
                     <td>{{rowData.name}}</td>
                     <td>{{rowData.description}}</td>
-                    <td>{{rowData.evaluation_type.name ? rowData.evaluation_type.name : getEvaluationTypeName(rowData.evaluation_type.id)}}</td>
+                    <td>{{rowData.evaluation_type.name ? rowData.evaluation_type.name :
+                        getEvaluationTypeName(rowData.evaluation_type.id)}}</td>
                     <td>{{rowData.type.name ? rowData.type.name : getTypeName(rowData.type.id)}}</td>
                     <td>{{rowData.status.name ? rowData.status.name : getStatusName(rowData.status.id)}}</td>
 

@@ -79,10 +79,10 @@ export class QuestionComponent implements OnInit {
         this.evaluationTypes = [{ label: 'Seleccione', value: '' }];
         response['data'].map((item: any) => {
           if (item.code == EVALUATION_TYPES.SELF_TEACHING || item.code == EVALUATION_TYPES.SELF_MANAGEMENT ||
-              item.code == EVALUATION_TYPES.STUDENT_TEACHING || item.code == EVALUATION_TYPES.STUDENT_MANAGEMENT ||
-              item.code == EVALUATION_TYPES.PAIR_TEACHING || item.code == EVALUATION_TYPES.PAIR_MANAGEMENT ||
-              item.code == EVALUATION_TYPES.AUTHORITY_TEACHING || item.code == EVALUATION_TYPES.AUTHORITY_MANAGEMENT
-            ) {
+            item.code == EVALUATION_TYPES.STUDENT_TEACHING || item.code == EVALUATION_TYPES.STUDENT_MANAGEMENT ||
+            item.code == EVALUATION_TYPES.PAIR_TEACHING || item.code == EVALUATION_TYPES.PAIR_MANAGEMENT ||
+            item.code == EVALUATION_TYPES.AUTHORITY_TEACHING || item.code == EVALUATION_TYPES.AUTHORITY_MANAGEMENT
+          ) {
             this.evaluationTypes.push({ label: item.name, value: item.id });
           }
         })
@@ -221,6 +221,9 @@ export class QuestionComponent implements OnInit {
     } else {
       this.selectedQuestion = {};
       this.formQuestion.reset();
+      this._translate.stream('NEW RECORD').subscribe(response => {
+        this.headerDialogQuestion = response;
+      });
     }
     this.displayFormQuestion = true;
   }
