@@ -46,7 +46,9 @@ export class EvaluationResultComponent implements OnInit {
   }
 
   getResultFinal(result:any){
-    return result *100/4;
+    const resultFinal = result*100/4;
+
+    return resultFinal.toFixed(2);
   }
 
   getEvaluations(): void {
