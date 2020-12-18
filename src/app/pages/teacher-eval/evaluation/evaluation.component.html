@@ -1,5 +1,5 @@
 <p-dialog [header]="headerDialogEvaluaion" [(visible)]="displayFormEvaluation" modal="true" showEffect="fade"
-    styleClass="mydialog">
+    styleClass="mydialog" [style]="{width: '50%'}">
     <form [formGroup]="formEvaluation" (ngSubmit)="onSubmitEvaluation($event)">
         <p-card>
             <p-header>
@@ -8,12 +8,14 @@
             <div class="p-grid">
                 <div class="p-xl-12 p-sm-12" style="margin: .5em">
                     <span class="ui-float-label">
-                        <p-dropdown id="float-input-type" [options]="teachers" formControlName="teacher_id"
-                            [disabled]="flagEditEvaluation || flagCreateDetailEvaluation"
-                            [pTooltip]="flagEditEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate) || flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
-                            [style]="{'width':'350px'}"
-                            [filter]="true"
-                            [showClear]="true"></p-dropdown>
+                        <p-dropdown id="float-input-type" 
+                        [options]="teachers" formControlName="teacher_id"
+                        [disabled]="flagEditEvaluation || flagCreateDetailEvaluation" 
+                        [pTooltip]="flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
+                        [style]="{'width':'350px'}" 
+                        [filter]="true" 
+                        [showClear]="true">
+                        </p-dropdown>
                         <label for="float-input-type">* {{"SELECT TEACHER"|translate}}</label>
                     </span>
                     <div *ngIf="formEvaluation.get('teacher_id').errors && formEvaluation.get('teacher_id').touched">
@@ -24,12 +26,14 @@
 
                 <div class="p-xl-12 p-sm-12" style="margin: .5em">
                     <span class="ui-float-label">
-                        <p-dropdown id="float-input-evaluationType" [options]="evaluationTypes"
-                            formControlName="evaluation_type_id"
-                            [disabled]="flagEditEvaluation || flagCreateDetailEvaluation"
-                            [pTooltip]="flagEditEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate) || flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
-                            [style]="{'width':'350px'}" 
-                            (onChange)="getPercentage($event)"></p-dropdown>
+                        <p-dropdown id="float-input-evaluationType" 
+                        [options]="evaluationTypes"
+                        formControlName="evaluation_type_id"
+                        [disabled]="flagEditEvaluation || flagCreateDetailEvaluation"
+                        [pTooltip]="flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
+                        [style]="{'width':'350px'}" 
+                        (onChange)="getPercentage($event)">
+                        </p-dropdown>
                         <label for="float-input-evaluationType">* {{"SELECT EVALUATION TYPE"|translate}}</label>
                     </span>
                     <div
@@ -45,7 +49,7 @@
                         <input id="float-input-percentage" type="text" pInputText formControlName="percentage" size="30"
                             [readOnly]="flagEditEvaluation || flagCreateDetailEvaluation"
                             [pTooltip]="flagEditEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate) || flagCreateDetailEvaluation?('CANNOT BE MODIFIED'|translate):('YOU WILL NOT BE ABLE TO MODIFY LATER'|translate)"
-                            style ="width :350px">
+                            style="width :350px">
                         <label for="float-input-percentage">* {{"PERCENTAGE"|translate}}</label>
                     </span>
                     <div *ngIf="formEvaluation.get('percentage').errors && formEvaluation.get('percentage').touched">
@@ -89,12 +93,11 @@
                     <span class="ui-float-label">
                         <span class="p-fluid">
                             <p-autoComplete 
-                            formControlName="evaluators"
+                            formControlName="evaluators" 
                             [suggestions]="filteredTeachers" 
                             field="label"
                             (completeMethod)="filterTeachers($event)" 
-                            [size]="50" 
-                            [multiple]="true"
+                            [size]="50" [multiple]="true"
                             (onSelect)="selectAddEvaluator($event)" 
                             (onUnselect)="selectDeleteEvaluator($event)"
                             [minLength]="1" 
@@ -190,7 +193,7 @@
                     <td>{{rowData.percentage}}</td>
                     <!--<td>{{rowData.school_period.name ? rowData.school_period.name : getNameSchoolPeriod(rowData.school_period.id)}}</td>-->
                     <td>{{rowData.school_period_id}}</td>
-                    <td>{{rowData.result}}</td>
+                    <td>{{getResult(rowData.result)}}</td>
                     <td>{{rowData.status.name ? rowData.status.name : getStatusName(rowData.status.id)}}</td>
                     <ol>
                         <ng-container *ngFor="let detail of rowData.detail_evaluations ">

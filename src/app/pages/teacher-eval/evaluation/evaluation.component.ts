@@ -99,6 +99,11 @@ export class EvaluationComponent implements OnInit {
     this.selectedEvaluationType = percentage['percentage'];
   }
 
+  getResult(result){
+    let total = result*100/4
+    return total.toFixed(2)
+  }
+
   setColsEvaluation() {
     this._translate.stream('CODE').subscribe(response => {
       this.colsEvaluation = [
