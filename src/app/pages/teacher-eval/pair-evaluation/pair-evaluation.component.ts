@@ -68,13 +68,6 @@ export class PairEvaluationComponent implements OnInit {
         detail: 'No constas como evaluador.'
       }
     ];
-    this.msgs2 = [
-      {
-        severity: 'success',
-        summary: 'Evaluación registrada',
-        detail: 'La evaluación se ha registrado'
-      }
-    ];
 
     this.getQuestions();
     this.getEvaluators();
@@ -188,8 +181,8 @@ export class PairEvaluationComponent implements OnInit {
         this._messageService.add({
           key: 'tst',
           severity: 'error',
-          summary: 'Oops! Problemas con el servidor',
-          //detail: error.error.msg.detail,
+          summary: error.error.msg.summary,
+          detail: error.error.msg.detail,
           life: 5000
         });
       });
@@ -203,8 +196,24 @@ export class PairEvaluationComponent implements OnInit {
   selectEvaluation(event: any): void {
     this.detailEvaluationTeachining = event.id
     const detailManagement = this.evaluatorManagement.find(id => id.evaluated === event.evaluated)
-    this.detailEvaluationManagement = detailManagement.id
-    this.teacherEvaluated = event.evaluated
+    if (detailManagement) {
+      this.listEvaluated = false
+      this.displayFormPairEvaluation = true
+      this.detailEvaluationManagement = detailManagement.id
+      this.teacherEvaluated = event.evaluated
+    } else {
+      this.msgs2 = [
+        {
+          severity: 'warn',
+          summary: 'Evaluación no disponible',
+          detail: 'Aun no se registra la evaluación pares gestión',
+        }
+      ]
+      setTimeout(() => {
+        this.msgs2 = [];
+      }, 3500)
+    }
+
   }
 
   return() {
