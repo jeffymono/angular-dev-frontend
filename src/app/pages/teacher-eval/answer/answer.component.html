@@ -1,5 +1,5 @@
 <p-dialog [header]="headerDialogAnswer" [(visible)]="displayFormAnswer" modal="true" showEffect="fade"
-          styleClass="mydialog">
+          styleClass="mydialog" [style]="{width: '50%'}">
     <form [formGroup]="formAnswer" (ngSubmit)="onSubmitAnswer($event)">
         <p-card>
             <p-header>

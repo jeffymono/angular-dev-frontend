@@ -6,26 +6,26 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { NgxSpinnerService } from 'ngx-spinner';
 import { TeacherEvalService } from '../../../services/teacher-eval/teacher-eval.service';
 import { TranslateService } from '@ngx-translate/core';
-import { PairEvaluation } from 'src/app/models/teacher-eval/pair-evaluation';
+import { AuthorityEvaluation } from 'src/app/models/teacher-eval/authority-evaluation';
 import { EVALUATION_TYPES } from 'src/environments/catalogues';
 import { Message } from 'primeng/api';
 
 @Component({
-  selector: 'app-pair-evaluation',
-  templateUrl: './pair-evaluation.component.html',
-  styleUrls: ['./pair-evaluation.component.scss']
+  selector: 'app-authority-evaluation',
+  templateUrl: './authority-evaluation.component.html',
+  styleUrls: ['./authority-evaluation.component.scss']
 })
-export class PairEvaluationComponent implements OnInit {
+export class AuthorityEvaluationComponent implements OnInit {
 
   msgs: Message[];
   msgs2: Message[];
   status: any[];
-  formPairEvaluation: FormGroup;
+  formAuthorityEvaluation: FormGroup;
   questionsTeaching: any[];
   questionsManagement: any[];
-  pairEvaluation: PairEvaluation;
-  selectedPairEvaluation: PairEvaluation;
-  displayFormPairEvaluation: boolean;
+  authorityEvaluation: AuthorityEvaluation;
+  selectedAuthorityEvaluation: AuthorityEvaluation;
+  displayFormAuthorityEvaluation: boolean;
   displayVerificated: boolean;
   evaluatorTeaching: any[];
   evaluatorManagement: any[];
@@ -33,7 +33,6 @@ export class PairEvaluationComponent implements OnInit {
   detailEvaluationTeachining: any[];
   detailEvaluationManagement: any[];
   listEvaluated: boolean;
-  teacherEvaluated: number;
 
   constructor(private _breadcrumbService: BreadcrumbService,
     private _fb: FormBuilder,
@@ -44,15 +43,15 @@ export class PairEvaluationComponent implements OnInit {
     private _ignugService: IgnugService,
   ) {
     this._breadcrumbService.setItems([
-      { label: 'pairEvaluations' }
+      { label: 'authorityEvaluations' }
     ]);
 
     this.detailEvaluationTeachining = [];
     this.detailEvaluationManagement = [];
     this.questionsTeaching = [];
     this.questionsManagement = [];
-
-    this.buildformPairEvaluation();
+    
+    this.buildformAuthorityEvaluation();
 
   }
 
@@ -82,9 +81,9 @@ export class PairEvaluationComponent implements OnInit {
 
   }
 
-  updateEvaluationPair() {
+  updateEvaluationAuthorityEvaluator() {
     this._spinnerService.hide();
-    this._teacherEvalService.post('evaluations/pair_evaluations', {})
+    this._teacherEvalService.post('evaluations/authorities', {})
       .subscribe(
         response => {
           this._spinnerService.hide();
@@ -129,16 +128,16 @@ export class PairEvaluationComponent implements OnInit {
         });
       });
   }
-
+  
   getEvaluators(): void {
     this._teacherEvalService.get('detail_evaluations').subscribe(
       response => {
         if (response !== null) {
           this._spinnerService.hide();
           response['data'].map((item: any) => {
-            if (item.evaluation.evaluation_type_id == EVALUATION_TYPES.PAIR_TEACHING) {
+            if (item.evaluation.evaluation_type_id == EVALUATION_TYPES.AUTHORITY_TEACHING) {
               this.evaluatorTeaching.push({ id: item.id, evaluator: item.detail_evaluationable_id, evaluated: item.evaluation.teacher_id })
-            } else if (item.evaluation.evaluation_type_id == EVALUATION_TYPES.PAIR_MANAGEMENT) {
+            } else if (item.evaluation.evaluation_type_id == EVALUATION_TYPES.AUTHORITY_MANAGEMENT) {
               this.evaluatorManagement.push({ id: item.id, evaluator: item.detail_evaluationable_id, evaluated: item.evaluation.teacher_id })
             }
           });
@@ -162,15 +161,15 @@ export class PairEvaluationComponent implements OnInit {
         });
       });
   }
-  getQuestions(): void {
+ getQuestions(): void {
     this._spinnerService.show();
-    this._teacherEvalService.get('types_questions/pair_evaluations').subscribe(
+    this._teacherEvalService.get('types_questions/authorities').subscribe(
       response => {
         this._spinnerService.hide();
         response['data'].map(question => {
-          if (question.evaluation_type_id == EVALUATION_TYPES.PAIR_TEACHING) {
+          if (question.evaluation_type_id == EVALUATION_TYPES.AUTHORITY_TEACHING) {
             this.questionsTeaching.push(question)
-          } else if (question.evaluation_type_id == EVALUATION_TYPES.PAIR_MANAGEMENT) {
+          } else if (question.evaluation_type_id == EVALUATION_TYPES.AUTHORITY_MANAGEMENT) {
             this.questionsManagement.push(question)
           }
         })
@@ -204,9 +203,8 @@ export class PairEvaluationComponent implements OnInit {
     this.detailEvaluationTeachining = event.id
     const detailManagement = this.evaluatorManagement.find(id => id.evaluated === event.evaluated)
     this.detailEvaluationManagement = detailManagement.id
-    this.teacherEvaluated = event.evaluated
   }
-
+  
   return() {
     const indiceUser = this.evaluatorTeaching
       .findIndex(element => element.id === this.detailEvaluationTeachining);
@@ -218,9 +216,8 @@ export class PairEvaluationComponent implements OnInit {
     }
   }
 
-
-  buildformPairEvaluation() {
-    this.formPairEvaluation = this._fb.group({
+  buildformAuthorityEvaluation() {
+    this.formAuthorityEvaluation = this._fb.group({
       id: [''],
       detail_evaluation_id: [''],
       teachingArray: new FormArray([]),
@@ -228,33 +225,33 @@ export class PairEvaluationComponent implements OnInit {
     });
   }
   get teachingArray() {
-    return this.formPairEvaluation.get('teachingArray') as FormArray;
+    return this.formAuthorityEvaluation.get('teachingArray') as FormArray;
   }
   get managementArray() {
-    return this.formPairEvaluation.get('managementArray') as FormArray;
+    return this.formAuthorityEvaluation.get('managementArray') as FormArray;
   }
-  onSubmitPairEvaluation(event: Event) {
+  onSubmitAuthorityEvaluation(event: Event) {
     event.preventDefault();
-    if (this.formPairEvaluation.valid) {
-      this.createPairEvaluationTeaching();
-      this.createPairEvaluationManagement();
+    if (this.formAuthorityEvaluation.valid) {
+      this.createAuthorityEvaluationTeaching();
+      this.createAuthorityEvaluationManagement();
 
     } else {
-      this.formPairEvaluation.markAllAsTouched();
+      this.formAuthorityEvaluation.markAllAsTouched();
     }
 
   }
 
-  createPairEvaluationTeaching() {
-    this.selectedPairEvaluation = this.castPairEvaluationTeaching();
+  createAuthorityEvaluationTeaching() {
+   this.selectedAuthorityEvaluation = this.castAuthorityEvaluationTeaching();
     this._spinnerService.show();
-    this._teacherEvalService.post('pair_evaluations/teachers', {
-      detail_evaluation: { id: this.selectedPairEvaluation.detail_evaluation },
-      answer_questions: this.selectedPairEvaluation.answer_questions
+    this._teacherEvalService.post('pair_evaluations/authorities', {
+      detail_evaluation: { id: this.selectedAuthorityEvaluation.detail_evaluation },
+      answer_questions: this.selectedAuthorityEvaluation.answer_questions
     }).subscribe(
       response => {
         this._spinnerService.show();
-        this.formPairEvaluation.reset();
+        this.formAuthorityEvaluation.reset();
         this._messageService.add({
           key: 'tst',
           severity: 'success',
@@ -273,18 +270,18 @@ export class PairEvaluationComponent implements OnInit {
         });
       });
   }
-  createPairEvaluationManagement() {
-    this.selectedPairEvaluation = this.castPairEvaluationManagement();
+  createAuthorityEvaluationManagement() {
+    this.selectedAuthorityEvaluation = this.castAuthorityEvaluationManagement();
     this._spinnerService.show();
-    this._teacherEvalService.post('pair_evaluations/teachers', {
-      detail_evaluation: { id: this.selectedPairEvaluation.detail_evaluation },
-      answer_questions: this.selectedPairEvaluation.answer_questions
+    this._teacherEvalService.post('pair_evaluations/authorities', {
+      detail_evaluation: { id: this.selectedAuthorityEvaluation.detail_evaluation },
+      answer_questions: this.selectedAuthorityEvaluation.answer_questions
     }).subscribe(
       response => {
         this._spinnerService.show();
-        this.displayFormPairEvaluation = false;
-        this.formPairEvaluation.reset();
-        this.updateEvaluationPair();
+        this.displayFormAuthorityEvaluation = false;
+        this.formAuthorityEvaluation.reset();
+        this.updateEvaluationAuthorityEvaluator();
         this.return();
         this._spinnerService.show()
         this._messageService.add({
@@ -306,25 +303,25 @@ export class PairEvaluationComponent implements OnInit {
       });
   }
 
-  castPairEvaluationTeaching(): PairEvaluation {
+  castAuthorityEvaluationTeaching(): AuthorityEvaluation {
     return {
-      id: this.formPairEvaluation.controls['id'].value,
+      id: this.formAuthorityEvaluation.controls['id'].value,
       detail_evaluation: this.detailEvaluationTeachining,
-      answer_questions: this.formPairEvaluation.controls['teachingArray'].value.map((answer_question_id: any) => {
+      answer_questions: this.formAuthorityEvaluation.controls['teachingArray'].value.map((answer_question_id: any) => {
         return { id: answer_question_id }
       }),
 
-    } as PairEvaluation;
+    } as AuthorityEvaluation;
   }
-  castPairEvaluationManagement(): PairEvaluation {
+  castAuthorityEvaluationManagement(): AuthorityEvaluation {
     return {
-      id: this.formPairEvaluation.controls['id'].value,
+      id: this.formAuthorityEvaluation.controls['id'].value,
       detail_evaluation: this.detailEvaluationManagement,
-      answer_questions: this.formPairEvaluation.controls['managementArray'].value.map((answer_question_id: any) => {
+      answer_questions: this.formAuthorityEvaluation.controls['managementArray'].value.map((answer_question_id: any) => {
         return { id: answer_question_id }
       }),
 
-    } as PairEvaluation;
+    } as AuthorityEvaluation;
   }
 
 }

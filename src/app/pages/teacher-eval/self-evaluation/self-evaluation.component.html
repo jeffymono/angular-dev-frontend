@@ -1,4 +1,4 @@
-<div *ngIf="showSelfEvaluation">
+<div *ngIf="showSelfEvaluation" class="centrado">
     <div class="p-grid">
         <div class="p-lg-12 p-md-12 p-sm-12">
             <h1 style="color:#000;">{{'SELF EVALUATIONS'|translate}}</h1>
@@ -10,12 +10,12 @@
 
             <div class="p-grid">
 
-                <ol class="p-xl-12 p-sm-12" style="margin: .5em">
+                <ol class="p-xl-12 p-sm-12 answers-questions" style="margin: .5em">
                     <span class="ui-float-label" formArrayName="answerQuestionsArray">
                         <li for="float-input-question" class="p-xl-12 p-sm-12" style="margin: .5em"
                             *ngFor="let question of answerQuestionsArray.controls; index as i">
-                            <label>{{questions[i].name}}</label>
-                            <small style="display:block; font-style: italic;">{{questions[i].description}}</small>
+                            <label><strong>{{questions[i].name}}</strong></label>
+                            <small class="p-text-italic p-d-block">{{questions[i].description}}</small>
                             <div
                                 *ngIf="answerQuestionsArray.controls[i].errors && answerQuestionsArray.controls[i].touched">
                                 <p-message severity="warn" text="{{'QUESTION REQUIRED'|translate}}"
@@ -23,13 +23,15 @@
                                 <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
                                     *ngIf="answerQuestionsArray.controls[i].hasError('minlength')"></p-message>
                             </div>
-                            <div class="p-xl-12 p-sm-12" style="margin: .5em"
-                                *ngFor="let answer of questions[i].answers">
-                                <span class="ui-float-label">
-                                    <input type="radio" id="float-input-answer-{{answer.pivot.id}}"
-                                        value="{{answer.pivot.id}}" [formControlName]="i">
-                                    <label for="float-input-answer-{{answer.pivot.id}}">{{answer.name}}</label>
-                                </span>
+                            <div class="p-d-flexo p-mt-3">
+                                <div style="margin: .5em;"
+                                    *ngFor="let answer of questions[i].answers">
+                                    <span class="ui-float-label" class="p-d-flex">
+                                        <input type="radio" id="float-input-answer-{{answer.pivot.id}}"
+                                            value="{{answer.pivot.id}}" [formControlName]="i">
+                                        <label style="margin-left: .5em;" for="float-input-answer-{{answer.pivot.id}}">{{answer.name}}</label>
+                                    </span>
+                                </div>
                             </div>
                         </li>
                     </span>
