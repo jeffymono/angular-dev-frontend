@@ -1,183 +1,100 @@
-<!-- 
-<form [formGroup]="formStudentEvaluation" (ngSubmit)="onSubmitStudentEvaluation($event)"  *ngIf="displayFormStudentEvaluation">
- 
-    <p-card>
-        <p-header>
-            <h1 style="margin-left: .5em;text-align:center;">{{"STUDENT-EVALUATION"|translate}}</h1>
-        </p-header>
-        <div class="p-grid">
+<div *ngIf="displayFormStudentEvaluation" class="centrado">
+    <div class="p-grid">
+        <div class="p-lg-12 p-md-12 p-sm-12" style="text-align: center;">
+            <h1 style="color:#000;">{{'STUDENT EVALUATIONS'|translate}}</h1>
+        </div>
+    </div>
 
-           <div class="p-xl-12 p-sm-12" style="margin: .5em;text-align:center;">
-                <span class="ui-float-label">
-                    <input id="float-input-teacher" type="text" pInputText formControlName="subject_teacher_id" size="30">
-                    <p><label for="float-input-teacher">* {{"SUBJECT TEACHER"|translate}}</label></p>
-                </span>
-                <div *ngIf="formStudentEvaluation.get('subject_teacher_id').errors && formStudentEvaluation.get('subject_teacher_id').touched">
-                    <p-message severity="warn" text="{{'TEACHER REQUIRED'|translate}}"
-                        *ngIf="formStudentEvaluation.get('subject_teacher_id').hasError('required')"></p-message>
-                    <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
-                        *ngIf="formStudentEvaluation.get('subject_teacher_id').hasError('minlength')"></p-message>
+    <form [formGroup]="formStudentEvaluation" (ngSubmit)="onSubmitStudentEvaluation($event)" *ngIf="displayFormStudentEvaluation">
+        <p-card>
+
+            <div class="p-grid">
+                <div class="p-xl-12 p-sm-12" style="margin: .5em;text-align:center;">
+                    <span class="ui-float-label">
+                        <input id="float-input-teacher" type="text" pInputText formControlName="subject_teacher_id" size="30">
+                        <p><label for="float-input-teacher">* {{"SUBJECT TEACHER"|translate}}</label></p>
+                    </span>
+                    <div *ngIf="formStudentEvaluation.get('subject_teacher_id').errors && formStudentEvaluation.get('subject_teacher_id').touched">
+                        <p-message severity="warn" text="{{'TEACHER REQUIRED'|translate}}"
+                            *ngIf="formStudentEvaluation.get('subject_teacher_id').hasError('required')"></p-message>
+                        <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
+                            *ngIf="formStudentEvaluation.get('subject_teacher_id').hasError('minlength')"></p-message>
+                    </div>
+                    <span class="ui-float-label">
+                        <input id="float-input-student" type="text" pInputText formControlName="student_id" size="30">
+                    </span>
+                    <p><label for="float-input-student">* {{"STUDENT"|translate}}</label></p>
+    
+                    <div *ngIf="formStudentEvaluation.get('student_id').errors && formStudentEvaluation.get('student_id').touched">
+                        <p-message severity="warn" text="{{'STUDENT REQUIRED'|translate}}"
+                            *ngIf="formStudentEvaluation.get('student_id').hasError('required')"></p-message>
+                        <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
+                            *ngIf="formStudentEvaluation.get('student_id').hasError('minlength')"></p-message>
+                    </div>
                 </div>
-                <span class="ui-float-label">
-                    <input id="float-input-student" type="text" pInputText formControlName="student_id" size="30">
-                </span>
-                <p><label for="float-input-student">* {{"STUDENT"|translate}}</label></p>
 
-                <div *ngIf="formStudentEvaluation.get('student_id').errors && formStudentEvaluation.get('student_id').touched">
-                    <p-message severity="warn" text="{{'STUDENT REQUIRED'|translate}}"
-                        *ngIf="formStudentEvaluation.get('student_id').hasError('required')"></p-message>
-                    <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
-                        *ngIf="formStudentEvaluation.get('student_id').hasError('minlength')"></p-message>
-                </div>
-            </div>
-                <div class="p-grid">
-                    <ol style="margin: .9em">
-                        <span class="ui-float-label" formArrayName="teachingArray">
-                            <li for="float-input-question" class="p-xl-12 p-sm-12" style="margin: .5em"
-                                *ngFor="let question of teachingArray.controls; index as i">
-                                <label>{{questionsTeaching[i].name}}</label>
-                                <span *ngIf="teachingArray.controls[i].errors && teachingArray.controls[i].touched">
-                                    <p-message severity="warn" text="{{'QUESTION REQUIRED'|translate}}"
-                                        *ngIf="teachingArray.controls[i].hasError('required')"></p-message>
-                                    <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
-                                        *ngIf="teachingArray.controls[i].hasError('minlength')"></p-message>
-                                </span>
-                                <div class="p-text-light">{{questionsTeaching[i].description}}</div>
-                                <div style="display: flex;">
-                                    <div class="p-xl-12 p-sm-12" style="margin: .5em"
-                                        *ngFor="let answer of questionsTeaching[i].answers">
-
-                                        <span class="ui-float-label">
-                                            <input type="radio" for="float-input-answer" value="{{answer.pivot.id}}"
-                                                [formControlName]="i">
-                                            <label for="float-input-answer">{{answer.name}}</label>
-                                        </span>
-                                    </div>
+                <ol class="p-xl-12 p-sm-12 answers-questions" style="margin: .5em">
+                    <span class="ui-float-label" formArrayName="teachingArray">
+                        <li for="float-input-question" class="p-xl-12 p-sm-12" style="margin: .5em"
+                            *ngFor="let question of teachingArray.controls; index as i">
+                            <label><strong>{{questionsTeaching[i].name}}</strong></label>
+                            <small class="p-text-italic p-d-block">{{questionsTeaching[i].description}}</small>
+                            <div
+                                *ngIf="teachingArray.controls[i].errors && teachingArray.controls[i].touched">
+                                <p-message severity="warn" text="{{'QUESTION REQUIRED'|translate}}"
+                                    *ngIf="teachingArray.controls[i].hasError('required')"></p-message>
+                                <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
+                                    *ngIf="teachingArray.controls[i].hasError('minlength')"></p-message>
                             </div>
-                            </li>
-                        </span>
-                        <span class="ui-float-label" formArrayName="managementArray">
-                            <li for="float-input-question" class="p-xl-12 p-sm-12" style="margin: .5em"
-                                *ngFor="let question of managementArray.controls; index as i">
-                                <label>{{questionsManagement[i].name}}</label>
-                                <span *ngIf="managementArray.controls[i].errors && managementArray.controls[i].touched">
-                                    <p-message severity="warn" text="{{'QUESTION REQUIRED'|translate}}"
-                                        *ngIf="managementArray.controls[i].hasError('required')"></p-message>
-                                    <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
-                                        *ngIf="managementArray.controls[i].hasError('minlength')"></p-message>
-                                </span>
-                                <div class="p-text-light">{{questionsManagement[i].description}}</div>
-                                <div class="p-xl-12 p-sm-12" style="margin: .5em"
-                                    *ngFor="let answer of questionsManagement[i].answers">
-                                    <span class="ui-float-label">
-                                        <input type="radio" for="float-input-answer" value="{{answer.pivot.id}}"
-                                            [formControlName]="i">
-                                        <label for="float-input-answer">{{answer.name}}</label>
+                            <div class="p-d-flexo p-mt-3">
+                                <div style="margin: .5em;"
+                                    *ngFor="let answer of questionsTeaching[i].answers">
+                                    <span class="ui-float-label" class="p-d-flex">
+                                        <input type="radio" id="float-input-answer-{{answer.pivot.id}}"
+                                            value="{{answer.pivot.id}}" [formControlName]="i">
+                                        <label style="margin-left: .5em;" for="float-input-answer-{{answer.pivot.id}}">{{answer.name}}</label>
                                     </span>
                                 </div>
-                            </li>
-                        </span>
-        
-                    </ol>
-        
-                </div>
-    
-                  
-        </div>
-        <p-footer>
-            <div class="p-fluid p-formgrid p-grid">
-                <div class="p-field p-col">
-                    <button type="submit" pButton icon="pi pi-save" class="ui-button-success"
-                            label="{{'CALIFICAR'|translate}}" ></button>
-                </div>
-            </div>
-        </p-footer>
-    </p-card>
-
-
-</form> -->
-
-
-<form [formGroup]="formStudentEvaluation" (ngSubmit)="onSubmitStudentEvaluation($event)"  *ngIf="displayFormStudentEvaluation">
-    <p-card>
-        <p-header>
-            <h1 style="margin-left: .5em">{{"STUDENT-EVALUATION"|translate}}</h1>
-        </p-header>
-        <div class="p-grid">
-
-           <div class="p-xl-12 p-sm-12" style="margin: .5em">
-                <span class="ui-float-label">
-                    <input id="float-input-teacher" type="text" pInputText formControlName="subject_teacher_id" size="30">
-                    <label for="float-input-teacher">* {{"SUBJECT TEACHER"|translate}}</label>
-                </span>
-                <div *ngIf="formStudentEvaluation.get('subject_teacher_id').errors && formStudentEvaluation.get('subject_teacher_id').touched">
-                    <p-message severity="warn" text="{{'TEACHER REQUIRED'|translate}}"
-                        *ngIf="formStudentEvaluation.get('subject_teacher_id').hasError('required')"></p-message>
-                    <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
-                        *ngIf="formStudentEvaluation.get('subject_teacher_id').hasError('minlength')"></p-message>
-                </div>
-            </div>
-            
-           <div class="p-xl-12 p-sm-12" style="margin: .5em">
-                <span class="ui-float-label">
-                    <input id="float-input-student" type="text" pInputText formControlName="student_id" size="30">
-                    <label for="float-input-student">* {{"STUDENT"|translate}}</label>
-                </span>
-                <div *ngIf="formStudentEvaluation.get('student_id').errors && formStudentEvaluation.get('student_id').touched">
-                    <p-message severity="warn" text="{{'STUDENT REQUIRED'|translate}}"
-                        *ngIf="formStudentEvaluation.get('student_id').hasError('required')"></p-message>
-                    <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
-                        *ngIf="formStudentEvaluation.get('student_id').hasError('minlength')"></p-message>
-                </div>
-            </div>
-
-            <ol class="p-xl-12 p-sm-12" style="margin: .5em" >
-                <span class="ui-float-label" formArrayName="teachingArray">
-                    <li for="float-input-question" class="p-xl-12 p-sm-12" style="margin: .5em" *ngFor="let question of teachingArray.controls; index as i" > 
-                        <label>{{questionsTeaching[i].name}}</label>
-                        <span [pTooltip]="questionsTeaching[i].description">❓</span>
-
-                        <div class="p-xl-12 p-sm-12" style="margin: .5em"  *ngFor="let answer of questionsTeaching[i].answers">
-                            <span class="ui-float-label" >
-                                <input type="radio" for="float-input-answer" value="{{answer.pivot.id}}"  [formControlName]="i">
-                                <label for="float-input-answer" >{{answer.name}}</label>
-                            </span>
-                        </div>
-                        <div *ngIf="teachingArray.controls[i].errors && teachingArray.controls[i].touched">
-                            <p-message severity="warn" text="{{'QUESTION REQUIRED'|translate}}"
-                                *ngIf="teachingArray.controls[i].hasError('required')"></p-message>
-                            <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
-                                *ngIf="teachingArray.controls[i].hasError('minlength')"></p-message>
-                        </div>
-                    </li>
-                </span>
-                <span class="ui-float-label" formArrayName="managementArray">
-                    <li for="float-input-question" class="p-xl-12 p-sm-12" style="margin: .5em" *ngFor="let question of managementArray.controls; index as i" > 
-                        <label>{{questionsManagement[i].name}}</label>
-                        <span [pTooltip]="questionsManagement[i].description">❓</span>
-                        <div class="p-xl-12 p-sm-12" style="margin: .5em"  *ngFor="let answer of questionsManagement[i].answers">
-                            <span class="ui-float-label" >
-                                <input type="radio" for="float-input-answer" value="{{answer.pivot.id}}"  [formControlName]="i">
-                                <label for="float-input-answer" >{{answer.name}}</label>
-                            </span>
-                        </div>
-                        <div *ngIf="managementArray.controls[i].errors && managementArray.controls[i].touched">
-                            <p-message severity="warn" text="{{'QUESTION REQUIRED'|translate}}"
-                                *ngIf="managementArray.controls[i].hasError('required')"></p-message>
-                            <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
-                                *ngIf="managementArray.controls[i].hasError('minlength')"></p-message>
                             </div>
-                    </li>
-                </span>
-            </ol>
-        </div>
-        <p-footer>
-            <div class="p-fluid p-formgrid p-grid">
-                <div class="p-field p-col">
-                    <button type="submit" pButton icon="pi pi-save" class="ui-button-success"
-                            label="{{'CALIFICAR'|translate}}" ></button>
-                </div>
+                        </li>
+                    </span>
+                    <span class="ui-float-label" formArrayName="managementArray">
+                        <li for="float-input-question" class="p-xl-12 p-sm-12" style="margin: .5em"
+                            *ngFor="let question of managementArray.controls; index as i">
+                            <label><strong>{{questionsManagement[i].name}}</strong></label>
+                            <small class="p-text-italic p-d-block">{{questionsManagement[i].description}}</small>
+                            <div
+                                *ngIf="managementArray.controls[i].errors && managementArray.controls[i].touched">
+                                <p-message severity="warn" text="{{'QUESTION REQUIRED'|translate}}"
+                                    *ngIf="managementArray.controls[i].hasError('required')"></p-message>
+                                <p-message severity="warn" text="Debe ingresar mínimo 5 dígitos"
+                                    *ngIf="managementArray.controls[i].hasError('minlength')"></p-message>
+                            </div>
+                            <div class="p-d-flexo p-mt-3">
+                                <div style="margin: .5em;"
+                                    *ngFor="let answer of questionsManagement[i].answers">
+                                    <span class="ui-float-label" class="p-d-flex">
+                                        <input type="radio" id="float-input-answer-{{answer.pivot.id}}"
+                                            value="{{answer.pivot.id}}" [formControlName]="i">
+                                        <label style="margin-left: .5em;" for="float-input-answer-{{answer.pivot.id}}">{{answer.name}}</label>
+                                    </span>
+                                </div>
+                            </div>
+                        </li>
+                    </span>
+
+                </ol>
+
             </div>
-        </p-footer>
-    </p-card>
-</form>
+            <p-footer>
+                <div class="p-fluid p-formgrid p-grid">
+                    <div class="p-field p-col">
+                        <button type="submit" pButton icon="pi pi-check" class="ui-button-success"
+                            label="{{'CALIFICAR'|translate}}"></button>
+                    </div>
+                </div>
+            </p-footer>
+        </p-card>
+    </form>
+    <p-toast key="tst"></p-toast>
+</div>

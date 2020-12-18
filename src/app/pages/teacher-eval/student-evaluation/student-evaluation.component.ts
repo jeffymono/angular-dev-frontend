@@ -8,6 +8,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { EVALUATION_TYPES } from 'src/environments/catalogues';
 import { StudentEvaluation} from '../../../models/teacher-eval/student-evaluation';
 import {InputTextareaModule} from 'primeng/inputtextarea';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-student-evaluation',
   templateUrl: './student-evaluation.component.html',
@@ -22,13 +24,17 @@ export class StudentEvaluationComponent implements OnInit {
   studentEvaluation: StudentEvaluation;
   selectedStudentEvaluation: StudentEvaluation;
   displayFormStudentEvaluation: boolean;
+  showStudentEvaluation: boolean;
+  
 
   constructor(private _breadcrumbService: BreadcrumbService,
     private _fb: FormBuilder,
     private _spinnerService: NgxSpinnerService,
     private _teacherEvalService: TeacherEvalService,
     private _messageService: MessageService,
-    private _translate: TranslateService) 
+    private _translate: TranslateService,
+    private _router: Router)
+
     { 
       this._breadcrumbService.setItems([
         { label: 'studentEvaluations' }
@@ -40,7 +46,8 @@ export class StudentEvaluationComponent implements OnInit {
     }
 
   ngOnInit(): void 
-  {
+  { 
+    this.getEvaluations();
     this.getQuestions();
 
   }
@@ -79,6 +86,23 @@ export class StudentEvaluationComponent implements OnInit {
             });
         });
 }
+showEvaluationResult(): void {
+    this._router.navigate(['/teacher_eval/evaluation-results'])
+}
+getEvaluations(): void {
+    this._spinnerService.show();
+    this._teacherEvalService.get('evaluations/registered_student_evaluations').subscribe(
+        response => {
+            this.selectedStudentEvaluation.subject_teacher,
+            this._spinnerService.hide();
+            this.showEvaluationResult()
+            this.showStudentEvaluation = false
+
+        }, error => {
+            this._spinnerService.hide();
+            this.showStudentEvaluation = true
+        });
+}
 
 buildformStudentEvaluation() {
       this.formStudentEvaluation = this._fb.group({
@@ -106,7 +130,7 @@ buildformStudentEvaluation() {
         this.formStudentEvaluation.markAllAsTouched();
     }
 
-}
+    }   
 createStudentEvaluationTeaching() {
   this.selectedStudentEvaluation = this.castStudentEvaluationTeaching();
   this._spinnerService.show();

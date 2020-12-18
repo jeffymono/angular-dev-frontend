@@ -1,23 +1,40 @@
 .mydialog {
-    width: 50vw;
-  }
-  
-  .greenText a {
-    color: green;
-  }
-  
-  .ui-tabview-selected {
-    background-color: red !important;
-  }
-  .center {
-    text-align: center;
-    list-style-position: inside;
-    }
-  
+  width: 50vw;
+}
 
-  @media screen and (max-width: 40em) {
-    .mydialog {
-      width: 75vw;
-    }
-    
+.greenText a {
+  color: green;
+}
+
+.ui-tabview-selected {
+  background-color: red !important;
+}
+
+@media screen and (max-width: 40em) {
+  .mydialog {
+    width: 75vw;
   }
+}
+@media screen and (max-width: 683px) {
+  .p-d-flexo {
+    display: block;
+  }
+}
+@media screen and (min-width: 683px) {
+  .p-d-flexo {
+    display: flex;
+  }
+}
+.answers-questions{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
+.answers-questions li::marker {
+  font-weight: bold;
+}
+.centrado{
+  width: fit-content;
+  margin: auto;
+}

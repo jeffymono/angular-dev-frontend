@@ -162,7 +162,7 @@ selectEvaluationType(evaluationType: EvaluationType): void {
       this.selectedEvaluationtype = {};
       this.formEvaluationType.reset();
      // this.flagEditEvaluationType=false;
-      this._translate.stream('NEW RECORD').subscribe(response => {
+      this._translate.stream('NEW EVALUATION TYPE').subscribe(response => {
           this.headerDialogEvaluationType  = response;
       });
   }
